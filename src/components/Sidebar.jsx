@@ -9,7 +9,8 @@ import {
   Store, 
   Network, 
   CreditCard, 
-  LogOut 
+  LogOut,
+  Gamepad2
 } from 'lucide-react';
 import logoIcon from '../assets/logo_icon.png';
 import './Sidebar.css';
@@ -23,6 +24,7 @@ const Sidebar = () => {
     { icon: Trophy, label: 'Vencedores', path: '/winners', sub: 'Ranking' },
     { icon: TrendingUp, label: 'Marketing', path: '/marketing', sub: 'Materiais' },
     { icon: MessageCircle, label: 'Whatsapp', path: '/whatsapp', sub: 'Mensagens' },
+    { icon: Gamepad2, label: 'Jogos', path: '/games', sub: 'Sorteios' },
     { icon: Store, label: 'Minha loja', path: '/store', sub: 'Configurações' },
     { icon: Network, label: 'Rede', sub: '(Em breve)' },
     { icon: CreditCard, label: 'Assinatura', sub: '(Em breve)' },

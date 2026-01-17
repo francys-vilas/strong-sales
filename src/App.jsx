@@ -8,20 +8,23 @@ import Marketing from './pages/Marketing';
 import Whatsapp from './pages/Whatsapp';
 import MinhaLoja from './pages/MinhaLoja';
 import Winners from './pages/Winners';
+import Games from './pages/Games';
 
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/campaigns" element={<Campaigns />} />
-        <Route path="/campaigns/new" element={<NewCampaign />} />
-        <Route path="/marketing" element={<Marketing />} />
-        <Route path="/whatsapp" element={<Whatsapp />} />
-        <Route path="/store" element={<MinhaLoja />} />
-        <Route path="/winners" element={<Winners />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="minha-loja" element={<MinhaLoja />} />
+        <Route path="store" element={<MinhaLoja />} />
+        <Route path="winners" element={<Winners />} />
+        <Route path="marketing" element={<Marketing />} />
+        <Route path="campaigns" element={<Campaigns />} />
+        <Route path="campaigns/new" element={<NewCampaign />} />
+        <Route path="whatsapp" element={<Whatsapp />} />
+        <Route path="games" element={<Games />} />
+      </Route>
+    </Routes>
   );
 }
 
