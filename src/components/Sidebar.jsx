@@ -11,6 +11,7 @@ import {
   CreditCard, 
   LogOut 
 } from 'lucide-react';
+import logoIcon from '../assets/logo_icon.png';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -31,7 +32,7 @@ const Sidebar = () => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="logo-container">
-          <img src="/src/assets/logo_icon.png" alt="Strong Sales" className="logo-symbol" style={{ height: '40px', width: 'auto' }} />
+          <img src={logoIcon} alt="Strong Sales" className="logo-symbol" style={{ height: '40px', width: 'auto' }} />
           <div className="logo-text-area">
             <h1 className="logo-title">Strong Sales</h1>
             <p className="logo-tagline">"Fazer negócio é nossa principal aptidão"</p>
