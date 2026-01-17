@@ -1,0 +1,15 @@
+.layout {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.main-content {
+  margin-left: 220px; /* Match sidebar width */
+  padding: 2rem;
+  background-color: var(--color-background);
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: calc(100% - 220px); /* Prevent overflow */
+  max-width: calc(100% - 220px);
+}
