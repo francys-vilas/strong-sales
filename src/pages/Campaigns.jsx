@@ -198,4 +198,3 @@ const Campaigns = () => {
 };
 
 export default Campaigns;
-

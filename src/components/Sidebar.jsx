@@ -26,8 +26,8 @@ const Sidebar = () => {
     { icon: MessageCircle, label: 'Whatsapp', path: '/whatsapp', sub: 'Mensagens' },
     { icon: Gamepad2, label: 'Jogos', path: '/games', sub: 'Sorteios' },
     { icon: Store, label: 'Minha loja', path: '/store', sub: 'Configurações' },
+    { icon: CreditCard, label: 'Assinatura', path: '/subscription', sub: 'Planos' },
     { icon: Network, label: 'Rede', sub: '(Em breve)' },
-    { icon: CreditCard, label: 'Assinatura', sub: '(Em breve)' },
   ];
 
   return (

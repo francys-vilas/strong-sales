@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
-import './Winners.css';
+import styles from './Winners.module.css';
 
 const Winners = () => {
   const [searchRef, setSearchRef] = useState('');
@@ -19,54 +19,99 @@ const Winners = () => {
     curtir: 'Curtir e...'
   });
 
+  const topWinners = [
+    {
+      id: 2,
+      name: 'João Souza',
+      rank: 2,
+      prize: 'R$ 2.000',
+      initial: 'J',
+      color: 'silver'
+    },
+    {
+      id: 1,
+      name: 'Maria Silva',
+      rank: 1,
+      prize: 'iPhone 15 Pro',
+      initial: 'M',
+      color: 'gold'
+    },
+    {
+      id: 3,
+      name: 'Ana Oliveira',
+      rank: 3,
+      prize: 'Kit Churrasco',
+      initial: 'A',
+      color: 'bronze'
+    }
+  ];
+
   return (
-    <div className="winners">
-      <header className="page-header">
+    <div className={styles.winnersContainer}>
+      <header className={styles.pageHeader}>
         <div>
           <h2>Vencedores</h2>
-          <p className="page-subtitle">Histórico e gestão de participantes premiados</p>
+          <p className={styles.pageSubtitle}>Histórico e gestão de participantes premiados</p>
         </div>
-        <div className="header-actions">
-          <button className="btn btn-primary" title="Exportar planilha">
+        <div className={styles.headerActions}>
+          <button className={styles.btnPrimary} title="Exportar planilha">
             <Download size={18} />
             Exportar
           </button>
         </div>
       </header>
 
-      <div className="winners-card">
-        <div className="filters-row">
-          <div className="filter-input-group">
+      {/* Podium Section */}
+      <div className={styles.podiumSection}>
+        {topWinners.map((winner) => (
+          <div key={winner.id} className={`${styles.podiumCard} ${styles[winner.color]}`}>
+            <div className={styles.avatarContainer}>
+              <div className={styles.avatarCircle}>
+                {winner.initial}
+              </div>
+              <div className={styles.rankBadge}>
+                {winner.rank}º Lugar
+              </div>
+            </div>
+            <h3 className={styles.winnerName}>{winner.name}</h3>
+            <p className={styles.winnerPrize}>{winner.prize}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.winnersCard}>
+        <div className={styles.filtersRow}>
+          <div className={styles.filterInputGroup}>
             <input 
               type="text" 
               placeholder="🔍 Código de referência"
               value={searchRef}
               onChange={(e) => setSearchRef(e.target.value)}
-              className="input-field"
+              className={styles.inputField}
             />
           </div>
-          <div className="filter-input-group">
+          <div className={styles.filterInputGroup}>
             <input 
               type="text" 
               placeholder="👤 Nome do vencedor"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              className="input-field"
+              className={styles.inputField}
             />
           </div>
-          <div className="filter-input-group">
+          <div className={styles.filterInputGroup}>
             <input 
               type="text" 
               placeholder="✉️ Email"
               value={searchEmail}
               onChange={(e) => setSearchEmail(e.target.value)}
-              className="input-field"
+              className={styles.inputField}
             />
           </div>
         </div>
 
-        <div className="table-container">
-          <table className="data-table">
+        <div className={styles.tableContainer}>
+          <table className={styles.dataTable}>
             <thead>
               <tr>
                 <th>Cód. ref</th>
@@ -88,7 +133,7 @@ const Winners = () => {
                   <td>{winner.email}</td>
                   <td>{winner.dataHora}</td>
                   <td>
-                    <span className="prize-badge">
+                    <span className={styles.prizeBadge}>
                       🎁 {winner.ganhou}
                     </span>
                   </td>
@@ -96,7 +141,7 @@ const Winners = () => {
                   <td>{winner.quantasJogou}</td>
                   <td>{winner.campanha}</td>
                   <td>
-                    <span className="action-cell">Ver detalhes</span>
+                    <span className={styles.actionCell}>Ver detalhes</span>
                   </td>
                 </tr>
               ))}

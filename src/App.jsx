@@ -9,6 +9,7 @@ import Whatsapp from './pages/Whatsapp';
 import MinhaLoja from './pages/MinhaLoja';
 import Winners from './pages/Winners';
 import Games from './pages/Games';
+import Subscription from './pages/Subscription';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="campaigns/new" element={<NewCampaign />} />
         <Route path="whatsapp" element={<Whatsapp />} />
         <Route path="games" element={<Games />} />
+        <Route path="subscription" element={<Subscription />} />
       </Route>
     </Routes>
   );

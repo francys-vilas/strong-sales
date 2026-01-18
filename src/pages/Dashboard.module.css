@@ -1,0 +1,345 @@
+/* Dashboard Module Styles */
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.dashboardHeader {
+    margin-bottom: 0.5rem;
+}
+
+.pageTitle {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--color-text-main);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.pageSubtitle {
+    color: var(--color-text-secondary);
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+}
+
+/* KPI Cards Grid */
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.kpiCard {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpiCard::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.kpiCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: currentColor;
+}
+
+.kpiCard:hover::after {
+    opacity: 1;
+}
+
+.kpiInfo h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpiValue {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--color-text-main);
+    line-height: 1.2;
+}
+
+.kpiTrend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.trendUp {
+    color: var(--color-success);
+}
+
+.trendDown {
+    color: var(--color-danger);
+}
+
+.kpiIcon {
+    padding: 0.85rem;
+    border-radius: var(--radius-lg);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Specific Colors */
+.cardBlue .kpiIcon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+.cardBlue:hover { border-color: #3b82f6; color: #3b82f6; }
+
+.cardGreen .kpiIcon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+}
+.cardGreen:hover { border-color: #10b981; color: #10b981; }
+
+.cardPurple .kpiIcon {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+.cardPurple:hover { border-color: #8b5cf6; color: #8b5cf6; }
+
+.cardOrange .kpiIcon {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);
+}
+.cardOrange:hover { border-color: #f97316; color: #f97316; }
+
+/* Main Grid Layout */
+.mainGrid {
+    display: grid;
+    grid-template-columns: 60% 40%; 
+    gap: 1.5rem;
+    height: 500px; /* Fixed height container */
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Chart Styles */
+.chartContainer {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0; /* Critical for flex child scrolling */
+}
+
+.chartHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+
+.chartHeader h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+}
+
+.chartSelect {
+    padding: 0.5rem 2.5rem 0.5rem 1rem; /* Extra right padding for arrow */
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: #f8fafc;
+    color: var(--color-text-main);
+    font-size: 0.875rem;
+    cursor: pointer;
+    outline: none;
+    appearance: none; /* Remove default arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.chartSelect:hover {
+    border-color: var(--color-primary);
+    background-color: white;
+}
+
+.chartWrapper {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    position: relative;
+}
+
+/* Winners Table Section */
+.winnersSection {
+    background: white;
+    padding: 0; /* Remove padding from container for full-bleed table feeling */
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.winnersHeader {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.winnersHeader h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.winnersListWrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.winnerItem {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s;
+}
+
+.winnerItem:last-child {
+    border-bottom: none;
+}
+
+.winnerItem:hover {
+    background-color: #f8fafc;
+}
+
+.winnerRank {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.rank1 { color: #fbbf24; text-shadow: 0 2px 4px rgba(251, 191, 36, 0.4); font-size: 1.4rem; }
+.rank2 { color: #94a3b8; font-size: 1.3rem; }
+.rank3 { color: #b45309; font-size: 1.2rem; }
+
+.winnerAvatar {
+    width: 40px;
+    height: 40px;
+    background: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.winnerInfo {
+    flex: 1;
+}
+
+.winnerName {
+    font-weight: 600;
+    color: var(--color-text-main);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.winnerTicket {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.winnerPrize {
+    font-weight: 700;
+    color: var(--color-success);
+    font-size: 0.95rem;
+}
+
+/* Responsiveness */
+@media (max-width: 1400px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+        height: auto; /* Allow auto height when stacked */
+        overflow: visible;
+    }
+
+    .chartContainer, .winnersSection {
+        height: 500px; /* Fixed height for stacked items */
+    }
+}
+
+@media (max-width: 1024px) {
+    .kpiGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .kpiGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboardContainer {
+        padding-bottom: 2rem;
+    }
+
+    .chartHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .chartContainer, .winnersSection {
+        height: 400px;
+    }
+}

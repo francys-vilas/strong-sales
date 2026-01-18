@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Trophy, RotateCw, Plus, Trash2, X, Sword, Grid, Eraser, Ticket, Target, Lightbulb, Keyboard, Shuffle } from 'lucide-react';
-import './Games.css';
+import styles from './Games.module.css';
 
 const DEFAULT_PARTICIPANTS = [
   'Maria Silva', 'João Souza', 'Ana Oliveira', 'Pedro Santos', 
@@ -422,90 +422,89 @@ const Games = () => {
         </div>
       </div>
 
-      <div className="games-layout">
-        <div className="games-tabs">
-          <button className={`game-tab ${activeTab === 'roulette' ? 'active' : ''}`} onClick={() => setActiveTab('roulette')}>🎡 Roleta</button>
-          <button className={`game-tab ${activeTab === 'slots' ? 'active' : ''}`} onClick={() => setActiveTab('slots')}>🎰 Caça-Níquel</button>
-          <button className={`game-tab ${activeTab === 'jokenpo' ? 'active' : ''}`} onClick={() => setActiveTab('jokenpo')}>✌️ Jokenpô</button>
-          <button className={`game-tab ${activeTab === 'memory' ? 'active' : ''}`} onClick={() => setActiveTab('memory')}>🧠 Memória</button>
-          <button className={`game-tab ${activeTab === 'scratch' ? 'active' : ''}`} onClick={() => setActiveTab('scratch')}>🎫 Raspadinha</button>
-          <button className={`game-tab ${activeTab === 'tictactoe' ? 'active' : ''}`} onClick={() => setActiveTab('tictactoe')}><Grid size={16}/> Velha</button>
-          <button className={`game-tab ${activeTab === 'whack' ? 'active' : ''}`} onClick={() => setActiveTab('whack')}><Target size={16}/> Alvo</button>
-          <button className={`game-tab ${activeTab === 'simon' ? 'active' : ''}`} onClick={() => setActiveTab('simon')}><Lightbulb size={16}/> Genius</button>
-          <button className={`game-tab ${activeTab === 'guess' ? 'active' : ''}`} onClick={() => setActiveTab('guess')}><Shuffle size={16}/> Adivinhe</button>
-          <button className={`game-tab ${activeTab === 'hangman' ? 'active' : ''}`} onClick={() => setActiveTab('hangman')}><Keyboard size={16}/> Forca</button>
+      <div className={styles.gamesLayout}>
+        <div className={styles.gamesTabs}>
+          <button className={`${styles.gameTab} ${activeTab === 'roulette' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('roulette')}>🎡 Roleta</button>
+          <button className={`${styles.gameTab} ${activeTab === 'slots' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('slots')}>🎰 Caça-Níquel</button>
+          <button className={`${styles.gameTab} ${activeTab === 'jokenpo' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('jokenpo')}>✌️ Jokenpô</button>
+          <button className={`${styles.gameTab} ${activeTab === 'memory' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('memory')}>🧠 Memória</button>
+          <button className={`${styles.gameTab} ${activeTab === 'scratch' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('scratch')}>🎫 Raspadinha</button>
+          <button className={`${styles.gameTab} ${activeTab === 'tictactoe' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('tictactoe')}><Grid size={16}/> Velha</button>
+          <button className={`${styles.gameTab} ${activeTab === 'whack' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('whack')}><Target size={16}/> Alvo</button>
+          <button className={`${styles.gameTab} ${activeTab === 'simon' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('simon')}><Lightbulb size={16}/> Genius</button>
+          <button className={`${styles.gameTab} ${activeTab === 'guess' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('guess')}><Shuffle size={16}/> Adivinhe</button>
+          <button className={`${styles.gameTab} ${activeTab === 'hangman' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('hangman')}><Keyboard size={16}/> Forca</button>
         </div>
 
-        <div className="game-container">
-          {/* ... Existing Games (Simplified for brevity in replace logic since I use full file replace, I must keep them present) */}
+        <div className={styles.gameContainer}>
           
           {/* ROULETTE */}
           {activeTab === 'roulette' && (
-            <div className="roulette-wrapper">
-              <div className="wheel-container">
-                <div className="wheel-marker"></div>
-                <div className="wheel" style={{ transform: `rotate(${rotation}deg)` }}></div>
+            <div className={styles.rouletteWrapper}>
+              <div className={styles.wheelContainer}>
+                <div className={styles.wheelMarker}></div>
+                <div className={styles.wheel} style={{ transform: `rotate(${rotation}deg)` }}></div>
               </div>
-              <div className="roulette-controls">
+              <div className={styles.rouletteControls}>
                 <div className="input-group">
                   <input type="text" className="input-field" placeholder="Adicionar nome..." value={newParticipant} onChange={(e) => setNewParticipant(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleAddParticipant()} />
                   <button className="btn btn-secondary" onClick={handleAddParticipant}><Plus size={20} /></button>
                 </div>
-                <div className="participants-list">
+                <div className={styles.participantsList}>
                   {participants.map((p, i) => (
-                    <div key={i} className="participant-item">
+                    <div key={i} className={styles.participantItem}>
                       <span>{p}</span>
                       <button onClick={() => handleRemoveParticipant(i)} className="text-danger"><Trash2 size={16} /></button>
                     </div>
                   ))}
                 </div>
-                <button className="btn-spin" onClick={spinRoulette} disabled={isSpinning || participants.length < 2}>{isSpinning ? 'Girando...' : 'SORTEAR AGORA'}</button>
+                <button className={styles.btnSpin} onClick={spinRoulette} disabled={isSpinning || participants.length < 2}>{isSpinning ? 'Girando...' : 'SORTEAR AGORA'}</button>
               </div>
             </div>
           )}
 
           {/* SLOT MACHINE */}
           {activeTab === 'slots' && (
-            <div className="slot-machine">
-               <div className="slot-window">
-                 {reels.map((icon, i) => (<div key={i} className={`reel ${isSlotSpinning ? 'spinning' : ''}`}>{icon}</div>))}
+            <div className={styles.slotMachine}>
+               <div className={styles.slotWindow}>
+                 {reels.map((icon, i) => (<div key={i} className={`${styles.reel} ${isSlotSpinning ? styles.reelSpinning : ''}`}>{icon}</div>))}
                </div>
-               <div className="slot-controls">
-                 <button className="btn-spin" onClick={spinSlots} disabled={isSlotSpinning} style={{ width: '100%' }}>{isSlotSpinning ? 'Girando...' : 'ALAVANCAR'}</button>
-                 <div className="slot-message">{slotMessage}</div>
+               <div className={styles.slotControls}>
+                 <button className={styles.btnSpin} onClick={spinSlots} disabled={isSlotSpinning} style={{ width: '100%' }}>{isSlotSpinning ? 'Girando...' : 'ALAVANCAR'}</button>
+                 <div className={styles.slotMessage}>{slotMessage}</div>
                </div>
             </div>
           )}
 
           {/* JOKENPO */}
           {activeTab === 'jokenpo' && (
-            <div className="jokenpo-board">
-              <div className="score-board">
+            <div className={styles.jokenpoBoard}>
+              <div className={styles.scoreBoard}>
                 <div className="score-item">Você: {jokenpoScore.player}</div>
-                <div className="score-vs">VS</div>
+                <div className={styles.scoreVs}>VS</div>
                 <div className="score-item">PC: {jokenpoScore.computer}</div>
               </div>
-              <div className="jokenpo-arena">
-                 <div className="fighter"><p>Você</p><div className="hand-icon">{playerChoice === 'rock' ? '✊' : playerChoice === 'paper' ? '✋' : playerChoice === 'scissors' ? '✌️' : '❓'}</div></div>
-                 <div className="fighter"><p>Computador</p><div className="hand-icon">{computerChoice === 'rock' ? '✊' : computerChoice === 'paper' ? '✋' : computerChoice === 'scissors' ? '✌️' : '💻'}</div></div>
+              <div className={styles.jokenpoArena}>
+                 <div className={styles.fighter}><p>Você</p><div className={styles.handIcon}>{playerChoice === 'rock' ? '✊' : playerChoice === 'paper' ? '✋' : playerChoice === 'scissors' ? '✌️' : '❓'}</div></div>
+                 <div className={styles.fighter}><p>Computador</p><div className={styles.handIcon}>{computerChoice === 'rock' ? '✊' : computerChoice === 'paper' ? '✋' : computerChoice === 'scissors' ? '✌️' : '💻'}</div></div>
               </div>
-              <div className="result-display">{jokenpoResult}</div>
-              <div className="jokenpo-controls">
-                <button className="btn-move" onClick={() => playJokenpo('rock')}>✊ Pedra</button>
-                <button className="btn-move" onClick={() => playJokenpo('paper')}>✋ Papel</button>
-                <button className="btn-move" onClick={() => playJokenpo('scissors')}>✌️ Tesoura</button>
+              <div className={styles.resultDisplay}>{jokenpoResult}</div>
+              <div className={styles.jokenpoControls}>
+                <button className={styles.btnMove} onClick={() => playJokenpo('rock')}>✊ Pedra</button>
+                <button className={styles.btnMove} onClick={() => playJokenpo('paper')}>✋ Papel</button>
+                <button className={styles.btnMove} onClick={() => playJokenpo('scissors')}>✌️ Tesoura</button>
               </div>
             </div>
           )}
 
           {/* MEMORY */}
           {activeTab === 'memory' && (
-            <div className="memory-board">
-              <div className="memory-stats">Movimentos: {memoryMoves}</div>
-              <div className="memory-grid">
+            <div className={styles.memoryBoard}>
+              <div className={styles.memoryStats}>Movimentos: {memoryMoves}</div>
+              <div className={styles.memoryGrid}>
                 {memoryCards.map((card) => (
-                   <div key={card.id} className={`memory-card ${card.isFlipped || card.isMatched ? 'flipped' : ''}`} onClick={() => handleCardClick(card.id)}>
-                     <div className="card-inner"><div className="card-front">?</div><div className="card-back">{card.emoji}</div></div>
+                   <div key={card.id} className={`${styles.memoryCard} ${card.isFlipped || card.isMatched ? styles.memoryCardFlipped : ''}`} onClick={() => handleCardClick(card.id)}>
+                     <div className={styles.cardInner}><div className={styles.cardFront}>?</div><div className={styles.cardBack}>{card.emoji}</div></div>
                    </div>
                 ))}
               </div>
@@ -515,12 +514,12 @@ const Games = () => {
 
           {/* SCRATCH */}
           {activeTab === 'scratch' && (
-            <div className="scratch-wrapper">
+            <div className={styles.scratchWrapper}>
                <h2>Raspadinha Premiada</h2>
                <p>Arraste para raspar!</p>
-               <div className="scratch-container">
-                 <div className="scratch-prize">{scratchPrize}</div>
-                 <canvas ref={canvasRef} width={300} height={200} className="scratch-canvas"></canvas>
+               <div className={styles.scratchContainer}>
+                 <div className={styles.scratchPrize}>{scratchPrize}</div>
+                 <canvas ref={canvasRef} width={300} height={200} className={styles.scratchCanvas}></canvas>
                </div>
                {isScratched && <button className="btn btn-primary mt-4" onClick={resetScratch}>Nova Raspadinha</button>}
             </div>
@@ -528,11 +527,11 @@ const Games = () => {
 
           {/* TIC TAC TOE */}
           {activeTab === 'tictactoe' && (
-              <div className="ttt-wrapper">
+              <div className={styles.tttWrapper}>
                   <h2>Jogo da Velha</h2>
-                  <div className="ttt-board">
+                  <div className={styles.tttBoard}>
                       {tttBoard.map((cell, i) => (
-                          <div key={i} className="ttt-cell" onClick={() => handleTttClick(i)}>
+                          <div key={i} className={styles.tttCell} onClick={() => handleTttClick(i)}>
                               {cell}
                           </div>
                       ))}
@@ -548,15 +547,15 @@ const Games = () => {
 
           {/* WHACK A MOLE */}
           {activeTab === 'whack' && (
-              <div className="whack-wrapper">
+              <div className={styles.whackWrapper}>
                   <h2>Acerte a Toupeira</h2>
-                  <div className="score-display">Pontos: {moleScore}</div>
+                  <div className={styles.scoreDisplay}>Pontos: {moleScore}</div>
                   {!moleActive ? (
                       <button className="btn btn-primary mb-4" onClick={startMoleGame}>Começar Jogo (15s)</button>
                   ) : (
-                      <div className="whack-grid">
+                      <div className={styles.whackGrid}>
                           {moles.map((isMole, i) => (
-                              <div key={i} className={`mole-hole ${isMole ? 'active' : ''}`} onClick={() => whackMole(i)}>
+                              <div key={i} className={`${styles.moleHole} ${isMole ? styles.moleHoleActive : ''}`} onClick={() => whackMole(i)}>
                                   {isMole && '🐹'}
                               </div>
                           ))}
@@ -567,14 +566,14 @@ const Games = () => {
 
           {/* SIMON */}
           {activeTab === 'simon' && (
-              <div className="simon-wrapper">
+              <div className={styles.simonWrapper}>
                   <h2>Genius (Simon)</h2>
                   <p>{simonMessage}</p>
-                  <div className="simon-board">
+                  <div className={styles.simonBoard}>
                       {simonColors.map(color => (
                           <div 
                               key={color} 
-                              className={`simon-btn ${color} ${simonFlash === color ? 'flash' : ''}`}
+                              className={`${styles.simonBtn} ${styles[color]} ${simonFlash === color ? styles.simonBtnFlash : ''}`}
                               onClick={() => handleSimonClick(color)}
                           ></div>
                       ))}
@@ -587,13 +586,13 @@ const Games = () => {
 
           {/* GUESS NUMBER */}
           {activeTab === 'guess' && (
-              <div className="guess-wrapper">
+              <div className={styles.guessWrapper}>
                   <h2>Adivinhe o Número (1-100)</h2>
                   {!guessTarget ? (
                       <button className="btn btn-primary" onClick={startGuessGame}>Iniciar Jogo</button>
                   ) : (
                       <>
-                          <p className="guess-hint">{guessMessage}</p>
+                          <p className={styles.guessHint}>{guessMessage}</p>
                           <div className="input-group" style={{ maxWidth: '300px', margin: '0 auto' }}>
                               <input 
                                   type="number" 
@@ -611,16 +610,16 @@ const Games = () => {
 
           {/* HANGMAN */}
           {activeTab === 'hangman' && (
-              <div className="hangman-wrapper">
+              <div className={styles.hangmanWrapper}>
                   <h2>Jogo da Forca</h2>
                   {!hangmanWord ? (
                       <button className="btn btn-primary" onClick={startHangman}>Nova Palavra</button>
                   ) : (
                       <>
-                          <div className="hangman-drawing">Errors: {hangmanErrors} / 6</div>
-                          <div className="hangman-word">
+                          <div className={styles.hangmanDrawing}>Errors: {hangmanErrors} / 6</div>
+                          <div className={styles.hangmanWord}>
                               {hangmanWord.split('').map((char, i) => (
-                                  <span key={i} className="hangman-char">
+                                  <span key={i} className={styles.hangmanChar}>
                                       {hangmanGuessed.has(char) || hangmanStatus !== 'playing' ? char : '_'}
                                   </span>
                               ))}
@@ -631,11 +630,11 @@ const Games = () => {
                                   <button className="btn btn-primary mt-2" onClick={startHangman}>Jogar Novamente</button>
                               </div>
                           ) : (
-                              <div className="hangman-keyboard">
+                              <div className={styles.hangmanKeyboard}>
                                   {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(char => (
                                       <button 
                                           key={char} 
-                                          className="key-btn" 
+                                          className={styles.keyBtn} 
                                           onClick={() => handleHangmanGuess(char)}
                                           disabled={hangmanGuessed.has(char)}
                                       >
@@ -650,11 +649,11 @@ const Games = () => {
           )}
 
           {winner && winner !== 'JACKPOT' && !moleActive && (
-            <div className="winner-overlay">
-              <div className="winner-card">
+            <div className={styles.winnerOverlay}>
+              <div className={styles.winnerCard}>
                 <Trophy size={64} className="text-warning mb-4" />
                 <h2>{winner.includes('Pontuação') ? 'Fim de Jogo' : 'VENCEDOR!'}</h2>
-                <div className="winner-name">{winner}</div>
+                <div className={styles.winnerName}>{winner}</div>
                 <button className="btn btn-primary mt-4" onClick={() => setWinner(null)}>
                   <RotateCw size={20} className="mr-2" /> Fechar
                 </button>

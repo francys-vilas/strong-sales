@@ -8,7 +8,9 @@ const Layout = () => {
     <div className="layout">
       <Sidebar />
       <main className="main-content">
-        <Outlet />
+        <div key={location.pathname} className="page-content animate-fade-in">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
