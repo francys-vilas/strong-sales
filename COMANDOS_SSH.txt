@@ -1,0 +1,73 @@
+# COMANDOS PARA CONFIGURAR EVOLUTION API
+# Copie e cole cada bloco no seu terminal SSH conectado ao servidor
+
+# ============================================
+# PASSO 1: Verificar/Instalar Docker
+# ============================================
+
+# Verificar se Docker está instalado
+docker --version
+
+# Se não estiver instalado, rodar estes comandos:
+apt update
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# ============================================
+# PASSO 2: Gerar API Key e Rodar Evolution API
+# ============================================
+
+# Gerar API Key (COPIE E SALVE O RESULTADO!)
+openssl rand -base64 32
+
+# Rodar Evolution API (SUBSTITUA <API_KEY_AQUI> pela chave gerada acima)
+docker run -d \
+  --name evolution-api \
+  --restart=always \
+  -p 8080:8080 \
+  -e AUTHENTICATION_API_KEY="<API_KEY_AQUI>" \
+  -v evolution_instances:/evolution/instances \
+  atendai/evolution-api:latest
+
+# ============================================
+# PASSO 3: Verificar se está funcionando
+# ============================================
+
+# Ver se container está rodando
+docker ps
+
+# Ver logs (deve mostrar "Server is running")
+docker logs evolution-api
+
+# Testar API (deve retornar erro 401, isso é normal - significa que está funcionando)
+curl http://localhost:8080/instance/fetchInstances
+
+# ============================================
+# INFORMAÇÕES IMPORTANTES
+# ============================================
+
+# URL da API para usar no Supabase:
+# http://147.182.199.133:8080
+
+# API Key para usar no Supabase:
+# A chave que você gerou no comando "openssl rand -base64 32"
+
+# ============================================
+# COMANDOS ÚTEIS
+# ============================================
+
+# Parar Evolution API
+docker stop evolution-api
+
+# Iniciar Evolution API
+docker start evolution-api
+
+# Reiniciar Evolution API
+docker restart evolution-api
+
+# Ver logs em tempo real
+docker logs evolution-api -f
+
+# Remover container (se quiser reinstalar)
+docker stop evolution-api
+docker rm evolution-api

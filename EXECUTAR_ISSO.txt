@@ -1,0 +1,34 @@
+INSTRUÇÕES PARA EXECUTAR - COPIE E COLE NO TERMINAL SSH
+================================================================
+
+PASSO 1: Abra qualquer um destes programas:
+  - PuTTY (se tiver instalado)
+  - Windows Terminal
+  - PowerShell
+  - CMD
+
+PASSO 2: Conecte ao servidor:
+  Digite: ssh root@147.182.199.133
+  Senha: Ohdude.2
+
+PASSO 3: COLE ESTE COMANDO INTEIRO (é uma linha só):
+
+curl -fsSL https://get.docker.com | sh && API_KEY=$(openssl rand -base64 32) && echo "" && echo "========================================" && echo "SUA API KEY (COPIE ISTO):" && echo "$API_KEY" && echo "========================================" && echo "" && docker run -d --name evolution-api --restart=always -p 8080:8080 -e AUTHENTICATION_API_KEY="$API_KEY" -v evolution_instances:/evolution/instances atendai/evolution-api:latest && sleep 5 && echo "" && echo "Status do container:" && docker ps | grep evolution && echo "" && echo "✅ PRONTO! Copie a API KEY acima e me envie"
+
+PASSO 4: Espere ~1 minuto (vai instalar Docker se necessário)
+
+PASSO 5: COPIE a API KEY que apareceu entre as linhas de "========"
+
+PASSO 6: ME ENVIE a API KEY copiada
+
+================================================================
+ALTERNATIVA - Se não conseguir usar SSH:
+
+Use este site (SSH web): https://www.serfish.com/console/
+1. Digite o IP: 147.182.199.133
+2. Username: root  
+3. Password: Ohdude.2
+4. Clique em "SSH"
+5. Cole o comando do PASSO 3
+6. Me envie a API KEY
+================================================================

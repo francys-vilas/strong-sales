@@ -84,12 +84,12 @@ a {
 }
 
 /* Typography System */
-h1 { font-size: 2.25rem; font-weight: 700; color: var(--color-text-main); line-height: 1.2; }
-h2 { font-size: 1.875rem; font-weight: 700; color: var(--color-text-main); line-height: 1.2; }
-h3 { font-size: 1.5rem; font-weight: 600; color: var(--color-text-main); line-height: 1.3; }
-h4 { font-size: 1.25rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
-h5 { font-size: 1.125rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
-h6 { font-size: 1rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
+h1 { font-size: 1.75rem; font-weight: 700; color: var(--color-text-main); line-height: 1.2; }
+h2 { font-size: 1.5rem; font-weight: 700; color: var(--color-text-main); line-height: 1.2; }
+h3 { font-size: 1.125rem; font-weight: 600; color: var(--color-text-main); line-height: 1.3; }
+h4 { font-size: 1rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
+h5 { font-size: 0.9375rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
+h6 { font-size: 0.875rem; font-weight: 600; color: var(--color-text-main); line-height: 1.4; }
 
 p { margin-bottom: 0.5rem; color: var(--color-text-main); }
 small { font-size: 0.875rem; color: var(--color-text-secondary); }
@@ -102,10 +102,10 @@ small { font-size: 0.875rem; color: var(--color-text-secondary); }
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
@@ -169,10 +169,10 @@ small { font-size: 0.875rem; color: var(--color-text-secondary); }
 .select-field,
 textarea.input-field {
   width: 100%;
-  padding: 0.625rem 1rem;
+  padding: 0.5rem 0.875rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--color-text-main);
   background: var(--color-surface);
   transition: all var(--transition-fast);
@@ -215,7 +215,7 @@ label.form-label {
 }
 
 .card-header {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(to right, #f8fafc, #ffffff);
   display: flex;
@@ -224,7 +224,7 @@ label.form-label {
 }
 
 .card-body {
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 /* 4. Badges */
@@ -302,8 +302,8 @@ label.form-label {
 }
 
 .page-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
@@ -311,13 +311,13 @@ label.form-label {
 }
 
 .page-header h2 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   margin-bottom: 0.25rem;
 }
 
 .page-header .page-subtitle {
   color: var(--color-text-secondary);
-  font-size: 1.1rem;
+  font-size: 0.875rem;
   margin-top: 0.25rem;
   font-weight: 500;
 }
@@ -454,7 +454,7 @@ a {
 
 .page-header h2 {
   color: var(--color-text-main);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
 }
@@ -462,7 +462,7 @@ a {
 .page-header p,
 .page-header .page-subtitle {
   color: var(--color-text-secondary);
-  font-size: 1.1rem; /* Increased size */
+  font-size: 0.875rem;
   margin: 0;
   font-weight: 500;
   margin-top: 0.25rem;

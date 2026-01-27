@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Megaphone, 
@@ -12,11 +12,18 @@ import {
   LogOut,
   Gamepad2
 } from 'lucide-react';
+import { supabase } from '../services/supabase';
 import logoIcon from '../assets/logo_icon.png';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
   
   const menuItems = [
     { icon: LayoutDashboard, label: 'Painel', path: '/', sub: 'Dashboard' },
@@ -74,7 +81,7 @@ const Sidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="logout-btn">
+        <button className="logout-btn" onClick={handleLogout}>
           <div className="nav-icon">
             <LogOut size={20} strokeWidth={2} />
           </div>

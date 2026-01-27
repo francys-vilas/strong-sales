@@ -1,0 +1,336 @@
+/* Container Global */
+.authContainer {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr; /* Mais espaço para o formulário */
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* Left Side - Branding (Visual Identity) */
+.brandingSide {
+  position: relative;
+  /* Brand Gradient based on Logo (Dark Teal/Blue to Lighter Blue) */
+  background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: white;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Pattern de fundo sutil */
+.brandingSide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Ilustração/Logo Principal Gigante */
+.brandingContent {
+  position: relative;
+  z-index: 10;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center flex items */
+  justify-content: center;
+}
+
+.brandingLogo {
+  width: 100px; /* Slightly larger logo */
+  height: 100px;
+  border-radius: 24px;
+  object-fit: cover;
+  margin-bottom: 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  background: white;
+  padding: 4px;
+}
+
+.brandingTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: white;
+}
+
+.brandingSubtitle {
+  font-size: 1.5rem; /* Larger for better impact since it's the only text */
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
+  max-width: 600px;
+  font-style: italic;
+}
+
+/* Right Side - Form Container */
+.formSide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  /* Removido borda e fundo branco para parecer "nativo" do lado direito, 
+     ou mantendo card sutil se preferir destaque */
+  background: transparent; 
+}
+
+/* Controle de Visibilidade do Logo no Form (Mobile vs Desktop) */
+.logoSection {
+  display: none; /* Escondido por padrão no Desktop (pois já tem no lado esquerdo) */
+  text-align: center;
+  margin-bottom: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobileLogo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+
+.mobileAppName {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+/* Cabeçalho do Form */
+.headerSection {
+  margin-bottom: 2.5rem;
+  /* text-align: left; Mantido padrão de formulários modernos */
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #0f172a; /* Slate 900 */
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #64748b; /* Slate 500 */
+  font-size: 0.95rem;
+}
+
+/* Form Elements */
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155; /* Slate 700 */
+  margin-bottom: 0.5rem;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  height: 48px; /* Altura fixa confortável para toque */
+  padding: 0 1rem 0 2.75rem; /* Espaço para ícone esquerda (opcional) ou ajustado */
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #0f172a;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+/* Ícone dentro do input */
+.inputIconLeft {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Ajuste padding se usar ícone na esquerda */
+.inputWithIcon {
+  padding-left: 2.75rem;
+}
+
+.input:focus {
+  border-color: #6366f1; /* Indigo 500 */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  outline: none;
+}
+
+.inputIconRight {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.inputIconRight:hover {
+  color: #6366f1;
+}
+
+/* Links e Botões */
+.forgotPassword {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: #6366f1;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 0.25rem;
+  float: right;
+}
+
+.primaryButton {
+  width: 100%;
+  height: 48px;
+  margin-top: 1.5rem; /* Espaço maior antes do botão principal */
+  background: #4338ca; /* Indigo 700 */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.2);
+}
+
+.primaryButton:hover {
+  background: #3730a3;
+  transform: translateY(-1px);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.divider::before, 
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.divider span {
+  padding: 0 1rem;
+}
+
+.googleButton {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #334155;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.googleButton:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.link {
+  color: #4338ca;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 0.25rem;
+}
+
+.errorMessage {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 4px; /* Mais quadrado para alertas */
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 1024px) {
+  .authContainer {
+    grid-template-columns: 1fr; /* Stack vertical (mas branding some) */
+  }
+
+  .brandingSide {
+    display: none; /* Esconde lado esquerdo no mobile/tablet */
+  }
+
+  .formSide {
+    background: #ffffff; /* Fundo branco limpo no mobile */
+    align-items: flex-start; /* Topo */
+    padding-top: 3rem;
+  }
+  
+  .authCard {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  /* Mostra logo no formulário apenas no mobile */
+  .logoSection {
+    display: flex; 
+  }
+
+  .headerSection {
+    text-align: center; /* Centraliza textos no mobile */
+  }
+}

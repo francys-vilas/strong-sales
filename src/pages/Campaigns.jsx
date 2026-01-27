@@ -1,84 +1,70 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Link2, Settings, Trash2, TrendingUp, Users } from 'lucide-react';
+import { Link2, Settings, Trash2, TrendingUp, Users, Gamepad2, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import Loading from '../components/Loading';
+import { useCampaigns } from '../hooks/useCampaigns';
 import './Campaigns.css';
 
 const Campaigns = () => {
-  const [campaigns, setCampaigns] = useState([
-    {
-      id: 1,
-      name: "Promoção Black Friday",
-      platform: 'Facebook',
-      url: 'https://www.facebook.com/minhaloja/black-friday',
-      action: "Conversão de Vendas",
-      isSuperCampaign: true,
-      isActive: true,
-      stats: {
-        clicks: 1247,
-        conversions: 89
-      }
-    },
-    {
-      id: 2,
-      name: "Lançamento Coleção Verão",
-      platform: 'Instagram',
-      url: 'https://www.instagram.com/minhaloja',
-      action: "Engajamento e Alcance",
-      isSuperCampaign: false,
-      isActive: true,
-      stats: {
-        clicks: 856,
-        conversions: 34
-      }
-    },
-    {
-      id: 3,
-      name: "Campanha WhatsApp Clientes VIP",
-      platform: 'WhatsApp',
-      url: 'https://wa.me/5511999999999',
-      action: "Remarketing",
-      isSuperCampaign: false,
-      isActive: false,
-      stats: {
-        clicks: 432,
-        conversions: 67
-      }
-    }
-  ]);
+  const {
+    campaigns,
+    loading,
+    filter,
+    setFilter,
+    filteredCampaigns,
+    toggleSuperCampaign,
+    toggleActive,
+    handleDelete,
+    reorderCampaign
+  } = useCampaigns();
 
-  const toggleSuperCampaign = (id) => {
-    setCampaigns(campaigns.map(c => 
-      c.id === id ? { ...c, isSuperCampaign: !c.isSuperCampaign } : c
-    ));
-  };
+  const [expandedCampaigns, setExpandedCampaigns] = useState(new Set());
 
-  const toggleActive = (id) => {
-    setCampaigns(campaigns.map(c => 
-      c.id === id ? { ...c, isActive: !c.isActive } : c
-    ));
-  };
+
+
+
+  
+
+
+
 
   const getPlatformColor = (platform) => {
     const colors = {
       Facebook: '#1877F2',
       Instagram: 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF)',
-      WhatsApp: '#25D366'
+      WhatsApp: '#25D366',
+      Google: '#DB4437',
+      Tiktok: '#000000',
+      Youtube: '#FF0000'
     };
     return colors[platform] || '#6366f1';
   };
 
+
+
+  // Removed dedicated loading return to allow background visibility
+
   return (
-    <div className="campaigns">
+    <div className="campaigns" style={{ position: 'relative', minHeight: '400px' }}>
+      {loading && (
+         <Loading text="Carregando campanhas..." />
+      )}
+
       <header className="page-header">
         <div>
           <h2>Minhas Campanhas</h2>
           <p className="page-subtitle">Gerencie e monitore suas campanhas de marketing</p>
         </div>
         <div className="header-actions">
-          <select className="select-field">
-            <option>Todas as Campanhas</option>
-            <option>Ativas</option>
-            <option>Pausadas</option>
+          <select 
+            className="select-field"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="Todas as Campanhas">Todas as Campanhas</option>
+            <option value="Ativas">Ativas</option>
+            <option value="Pausadas">Pausadas</option>
           </select>
           <Link to="/campaigns/new" className="btn btn-primary">+ Nova Campanha</Link>
         </div>
@@ -88,7 +74,7 @@ const Campaigns = () => {
         <div className="stat-card">
           <TrendingUp size={20} />
           <div>
-            <span className="stat-value">{campaigns.length}</span>
+            <span className="stat-value">{campaigns.filter(c => c.is_active).length}</span>
             <span className="stat-label">Campanhas Ativas</span>
           </div>
         </div>
@@ -96,103 +82,200 @@ const Campaigns = () => {
           <Users size={20} />
           <div>
             <span className="stat-value">
-              {campaigns.reduce((sum, c) => sum + c.stats.clicks, 0).toLocaleString()}
+              {campaigns.reduce((sum, c) => sum + (c.clicks || 0), 0).toLocaleString()}
             </span>
             <span className="stat-label">Total de Cliques</span>
           </div>
         </div>
       </div>
 
-      <div className="campaigns-list">
-        {campaigns.map(campaign => (
-          <div key={campaign.id} className={`campaign-card ${!campaign.isActive ? 'inactive' : ''}`}>
-            <div className="campaign-header">
-              <div className="campaign-title-area">
-                <h3 className="campaign-name">{campaign.name}</h3>
-                <span 
-                  className="platform-badge" 
-                  style={{ background: getPlatformColor(campaign.platform) }}
-                >
-                  {campaign.platform}
-                </span>
-                {campaign.isSuperCampaign && (
-                  <span className="super-badge">⭐ SUPER</span>
-                )}
-                <span className={`status-badge ${campaign.isActive ? 'active' : 'paused'}`}>
-                  {campaign.isActive ? '● Ativa' : '○ Pausada'}
-                </span>
-              </div>
-              
-              <div className="campaign-actions">
-                <button className="icon-btn" title="Copiar Link">
-                  <Link2 size={18} />
-                </button>
-                <button className="icon-btn" title="Configurações">
-                  <Settings size={18} />
-                </button>
-                <button className="icon-btn delete-btn" title="Excluir">
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
+      {campaigns.length === 0 && !loading ? (
+        <EmptyState 
+            title="Nenhuma campanha encontrada"
+            description={filter === 'Todas as Campanhas' 
+                ? "Você ainda não criou nenhuma campanha. Crie sua primeira campanha para começar a atrair clientes!" 
+                : `Não há campanhas ${filter.toLowerCase()} no momento.`
+            }
+            actionLabel={filter === 'Todas as Campanhas' ? "Criar Nova Campanha" : null}
+            onAction={filter === 'Todas as Campanhas' ? () => window.location.href = '/campaigns/new' : null}
+        />
+      ) : (
+        <div className="campaigns-list">
+          {filteredCampaigns.map(campaign => {
+            const isExpanded = expandedCampaigns.has(campaign.id);
+            const currentIndex = filteredCampaigns.findIndex(c => c.id === campaign.id);
+            const isFirst = currentIndex === 0;
+            const isLast = currentIndex === filteredCampaigns.length - 1;
             
-            <div className="campaign-body">
-              <div className="campaign-details">
-                <div className="detail-item">
-                  <span className="detail-label">URL Destino:</span>
-                  <a href={campaign.url} className="detail-link" target="_blank" rel="noopener noreferrer">
-                    {campaign.url}
-                  </a>
+            const toggleExpand = () => {
+              const newExpanded = new Set(expandedCampaigns);
+              if (isExpanded) {
+                newExpanded.delete(campaign.id);
+              } else {
+                newExpanded.add(campaign.id);
+              }
+              setExpandedCampaigns(newExpanded);
+            };
+            
+            return (
+            <div key={campaign.id} className={`campaign-card ${!campaign.is_active ? 'inactive' : ''}`}>
+                <div className="campaign-header">
+                  <div className="campaign-title-area">
+                    <div className="campaign-order-controls">
+                      <span className="order-badge">#{campaign.display_order || currentIndex + 1}</span>
+                      <div className="order-buttons">
+                        <button 
+                          className="order-btn" 
+                          onClick={() => reorderCampaign(campaign.id, 'up')}
+                          disabled={isFirst}
+                          title="Mover para cima"
+                        >
+                          <ArrowUp size={12} />
+                        </button>
+                        <button 
+                          className="order-btn" 
+                          onClick={() => reorderCampaign(campaign.id, 'down')}
+                          disabled={isLast}
+                          title="Mover para baixo"
+                        >
+                          <ArrowDown size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <h3 className="campaign-name">{campaign.name}</h3>
+                    <span 
+                      className="platform-badge" 
+                      style={{ background: getPlatformColor(campaign.platform) }}
+                    >
+                      {campaign.platform}
+                    </span>
+                    {campaign.is_super_campaign && (
+                      <span className="super-badge">⭐ SUPER</span>
+                    )}
+                    <span className={`status-badge ${campaign.is_active ? 'active' : 'paused'}`}>
+                      {campaign.is_active ? '● Ativa' : '○ Pausada'}
+                    </span>
+                  </div>
+                  
+                  <div className="campaign-actions">
+                    <button 
+                      className="icon-btn expand-btn" 
+                      title={isExpanded ? "Recolher" : "Expandir"}
+                      onClick={toggleExpand}
+                    >
+                      <ChevronDown size={18} className={isExpanded ? 'expanded' : ''} />
+                    </button>
+                    <Link to={`/play/${campaign.id}`} className="icon-btn" title="Visualizar Jogo">
+                      <Gamepad2 size={18} />
+                    </Link>
+                    <button className="icon-btn" title="Copiar Link" onClick={() => {
+                        navigator.clipboard.writeText(campaign.target_url);
+                        alert("Link copiado!");
+                    }}>
+                      <Link2 size={18} />
+                    </button>
+                    <Link to={`/campaigns/edit/${campaign.id}`} className="icon-btn" title="Configurações">
+                      <Settings size={18} />
+                    </Link>
+                    <button className="icon-btn delete-btn" title="Excluir" onClick={() => handleDelete(campaign.id)}>
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Objetivo:</span>
-                  <span className="detail-value">{campaign.action}</span>
-                </div>
-              </div>
+                
+                {!isExpanded && (
+                  <div className="campaign-compact-stats">
+                    <div className="compact-stat">
+                      <span className="compact-stat-value">{(campaign.clicks || 0).toLocaleString()}</span>
+                      <span className="compact-stat-label">cliques</span>
+                    </div>
+                    <div className="compact-stat-divider">•</div>
+                    <div className="compact-stat">
+                      <span className="compact-stat-value">{campaign.conversions || 0}</span>
+                      <span className="compact-stat-label">conversões</span>
+                    </div>
+                    <div className="compact-stat-divider">•</div>
+                    <div className="compact-stat">
+                      <span className="compact-stat-value">
+                        {campaign.clicks > 0 
+                          ? (((campaign.conversions || 0) / campaign.clicks) * 100).toFixed(1) 
+                          : '0.0'}%
+                      </span>
+                      <span className="compact-stat-label">taxa</span>
+                    </div>
+                    <div className="compact-stat-divider">•</div>
+                    <div className="compact-stat compact-stat-url">
+                      <span className="compact-stat-label">Objetivo:</span>
+                      <span className="compact-stat-value">{campaign.conversion_goal}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {isExpanded && (
+                  <>
+                    <div className="campaign-body">
+                      <div className="campaign-details">
+                        <div className="detail-item">
+                          <span className="detail-label">URL Destino:</span>
+                          <a href={campaign.target_url} className="detail-link" target="_blank" rel="noopener noreferrer">
+                            {campaign.target_url}
+                          </a>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Objetivo:</span>
+                          <span className="detail-value">{campaign.conversion_goal}</span>
+                        </div>
+                      </div>
 
-              <div className="campaign-stats">
-                <div className="stat-item">
-                  <span className="stat-number">{campaign.stats.clicks.toLocaleString()}</span>
-                  <span className="stat-text">Cliques</span>
-                </div>
-                <div className="stat-divider"></div>
-                <div className="stat-item">
-                  <span className="stat-number">{campaign.stats.conversions}</span>
-                  <span className="stat-text">Conversões</span>
-                </div>
-                <div className="stat-divider"></div>
-                <div className="stat-item">
-                  <span className="stat-number">
-                    {((campaign.stats.conversions / campaign.stats.clicks) * 100).toFixed(1)}%
-                  </span>
-                  <span className="stat-text">Taxa Conv.</span>
-                </div>
-              </div>
+                      <div className="campaign-stats">
+                        <div className="stat-item">
+                          <span className="stat-number">{(campaign.clicks || 0).toLocaleString()}</span>
+                          <span className="stat-text">Cliques</span>
+                        </div>
+                        <div className="stat-divider"></div>
+                        <div className="stat-item">
+                          <span className="stat-number">{campaign.conversions || 0}</span>
+                          <span className="stat-text">Conversões</span>
+                        </div>
+                        <div className="stat-divider"></div>
+                        <div className="stat-item">
+                          <span className="stat-number">
+                            {campaign.clicks > 0 
+                                ? (((campaign.conversions || 0) / campaign.clicks) * 100).toFixed(1) 
+                                : '0.0'}%
+                          </span>
+                          <span className="stat-text">Taxa Conv.</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="campaign-footer">
+                      <label className="toggle-label">
+                        <input 
+                          type="checkbox" 
+                          checked={campaign.is_super_campaign}
+                          onChange={() => toggleSuperCampaign(campaign.id, campaign.is_super_campaign)}
+                          className="toggle-input"
+                        />
+                        <span className="toggle-text">Destacar como Super Campanha</span>
+                      </label>
+
+                      <label className="switch">
+                        <input 
+                          type="checkbox" 
+                          checked={campaign.is_active}
+                          onChange={() => toggleActive(campaign.id, campaign.is_active)}
+                        />
+                        <span className="slider"></span>
+                      </label>
+                    </div>
+                  </>
+                )}
             </div>
-
-            <div className="campaign-footer">
-              <label className="toggle-label">
-                <input 
-                  type="checkbox" 
-                  checked={campaign.isSuperCampaign}
-                  onChange={() => toggleSuperCampaign(campaign.id)}
-                  className="toggle-input"
-                />
-                <span className="toggle-text">Destacar como Super Campanha</span>
-              </label>
-
-              <label className="switch">
-                <input 
-                  type="checkbox" 
-                  checked={campaign.isActive}
-                  onChange={() => toggleActive(campaign.id)}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,700 +1,218 @@
-/* V3 Dashboard Layout */
 .whatsapp-page {
-  animation: fadeIn var(--transition-normal);
-}
-
-.subtitle {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    margin-top: 0.25rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .whatsapp-dashboard {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 2rem;
-    padding-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-/* Main Content Column */
-.whatsapp-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+@media (max-width: 900px) {
+  .whatsapp-dashboard {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* Connection Card */
 .connection-status-card {
   background: white;
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
 .card-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .card-header h3 {
-    font-size: 1.1rem;
-    color: var(--color-text-main);
-    font-weight: 700;
+  font-size: 1.25rem;
+  color: #1e293b;
+  margin: 0;
+  font-weight: 600;
 }
 
 .status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
-.status-badge.active {
-    background-color: var(--color-success-light);
-    color: var(--color-success-dark);
-}
+.status-badge.active { background: #dcfce7; color: #166534; }
+.status-badge.inactive { background: #f1f5f9; color: #64748b; }
 
-.status-badge.inactive {
-    background-color: var(--color-background);
-    color: var(--color-text-secondary);
-}
-
-/* Logs Section */
-.logs-section {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-}
-
-.logs-section h3 {
-    font-size: 1.1rem;
-    color: var(--color-text-main);
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-}
-
-.logs-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.logs-table th {
-    text-align: left;
-    padding: 0.75rem;
-    color: var(--color-text-secondary);
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.logs-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-    font-size: 0.9rem;
-    color: var(--color-text-main);
-}
-
-.log-status.success {
-    color: var(--color-success-dark);
-    background-color: var(--color-success-light);
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-/* Sidebar Help */
-.whatsapp-sidebar-help {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.help-card, .info-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-}
-
-.help-card h3, .info-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--color-text-main);
-}
-
-.steps-list {
-    padding-left: 1.25rem;
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-}
-
-.steps-list li {
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-    font-size: 0.9rem;
-}
-
-.info-item .label {
-    color: var(--color-text-secondary);
-}
-
-.info-item .value {
-    font-weight: 600;
-    color: var(--color-text-main);
-}
-
-/* Diagram (Reused/Tweaked) */
+/* Diagram */
 .connection-diagram {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    width: 100%;
-    padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.icon-node {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .platform-icon {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-md);
-    border: 2px solid white;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-image {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
+  width: 70%;
+  height: auto;
+  object-fit: contain;
 }
 
-.search-overlay {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: var(--color-warning);
-    color: white;
-    padding: 6px;
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-    border: 2px solid white;
+
+
+.whatsapp-node {
+  color: #25D366;
 }
 
-.whatsapp-icon {
-    color: #25D366;
-    filter: drop-shadow(0 4px 6px rgba(37, 211, 102, 0.2));
-    width: 80px;
-    height: 80px;
-}
-
+/* Animated Dotted Line */
 .connection-line {
-    flex: 1;
-    max-width: 200px;
-    height: 3px;
-    background-color: var(--color-border);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 2px;
+  flex: 1;
+  max-width: 300px;
+  height: 2px;
+  background-image: linear-gradient(to right, #cbd5e1 50%, transparent 50%);
+  background-position: top;
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1rem;
+  animation: dashMove 30s linear infinite;
 }
 
-.connection-line.connected {
-    background-color: var(--color-success);
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+@keyframes dashMove {
+  to {
+    background-position: 100% 0;
+  }
 }
 
-.connection-line.disconnected {
-    background: repeating-linear-gradient(90deg, var(--color-border) 0, var(--color-border) 10px, transparent 10px, transparent 15px);
-    background-size: 200% 100%;
-    animation: moveStripes 2s linear infinite;
-    height: 2px;
+.status-indicator {
+  background: #fee2e2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-@keyframes moveStripes {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
+.status-indicator.success {
+  background: #dcfce7;
+  color: #22c55e;
 }
 
-.status-icon {
-    background: white;
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    border: 2px solid white;
-}
-
-.status-icon.success {
-    color: var(--color-success);
-    background-color: var(--color-success-light);
-}
-
-.status-icon.error {
-    color: var(--color-danger);
-    background-color: var(--color-danger-light);
-}
-
+/* Status Actions */
 .status-action-area {
-    text-align: center;
-    width: 100%;
-}
-
-.status-text {
-    color: var(--color-text-secondary);
-    margin-bottom: 1.5rem;
-}
-
-/* Buttons & Toggle */
-.btn-connect {
-    /* Mapped to btn-primary in JSX, specific overrides here if needed */
-    width: 100%;
-    max-width: 300px;
-}
-
-.btn-disconnect {
-    /* Mapped to btn-secondary/danger in JSX */
-    width: 100%;
-    max-width: 300px;
-}
-
-.toggle-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 56px;
-    height: 30px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #cbd5e1;
-    transition: 0.4s;
-    border-radius: 30px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 24px;
-    width: 24px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: var(--color-success);
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-.subtitle {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    margin-top: 0.25rem;
-}
-
-.whatsapp-dashboard {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 2rem;
-    padding-bottom: 2rem;
-}
-
-/* Main Content Column */
-.whatsapp-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.connection-status-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border);
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.card-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.card-header h3 {
-    font-size: 1.1rem;
-    color: var(--color-text-main);
-}
-
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.status-badge.active {
-    background-color: #dcfce7;
-    color: #15803d;
-}
-
-.status-badge.inactive {
-    background-color: #f1f5f9;
-    color: #64748b;
-}
-
-/* Logs Section */
-.logs-section {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-}
-
-.logs-section h3 {
-    font-size: 1.1rem;
-    color: var(--color-text-main);
-    margin-bottom: 1.5rem;
-}
-
-.logs-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.logs-table th {
-    text-align: left;
-    padding: 0.75rem;
-    color: var(--color-text-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.logs-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.9rem;
-    color: var(--color-text-main);
-}
-
-.log-status.success {
-    color: #15803d;
-    background-color: #dcfce7;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-/* Sidebar Help */
-.whatsapp-sidebar-help {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.help-card, .info-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-}
-
-.help-card h3, .info-card h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--color-text-main);
-}
-
-.steps-list {
-    padding-left: 1.25rem;
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-}
-
-.steps-list li {
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-    font-size: 0.9rem;
-}
-
-.info-item .label {
-    color: var(--color-text-secondary);
-}
-
-.info-item .value {
-    font-weight: 600;
-    color: var(--color-text-main);
-}
-
-/* Diagram (Reused/Tweaked) */
-.connection-diagram {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    width: 100%;
-    padding: 1rem;
-}
-
-.platform-icon {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border: 2px solid white;
-}
-
-.logo-image {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-}
-
-.search-overlay {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: #fbbf24;
-    color: white;
-    padding: 6px;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 2px solid white;
-}
-
-.whatsapp-icon {
-    color: #25D366;
-    filter: drop-shadow(0 4px 6px rgba(37, 211, 102, 0.2));
-    width: 80px;
-    height: 80px;
-}
-
-.connection-line {
-    flex: 1;
-    max-width: 200px;
-    height: 3px;
-    background-color: #e2e8f0;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 2px;
-}
-
-.connection-line.connected {
-    background-color: #22c55e;
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-}
-
-.connection-line.disconnected {
-    background: repeating-linear-gradient(90deg, #e2e8f0 0, #e2e8f0 10px, transparent 10px, transparent 15px);
-    background-size: 200% 100%;
-    animation: moveStripes 2s linear infinite;
-    height: 2px;
-}
-
-@keyframes moveStripes {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
-}
-
-.status-icon {
-    background: white;
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    border: 2px solid white;
-}
-
-.status-icon.success {
-    color: #22c55e;
-    background-color: #dcfce7;
-}
-
-.status-icon.error {
-    color: #ef4444;
-    background-color: #fee2e2;
-}
-
-.status-action-area {
-    text-align: center;
-    width: 100%;
+  gap: 1.5rem;
 }
 
 .status-text {
-    color: var(--color-text-secondary);
-    margin-bottom: 1.5rem;
+  color: #64748b;
+  font-size: 1.1rem;
 }
 
-/* Buttons & Toggle */
-.btn-connect {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
-    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
-    width: 100%;
-    max-width: 300px;
-    padding: 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s;
+/* Buttons */
+.btn {
+  padding: 0.875rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-size: 1rem;
 }
 
-.btn-connect:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.4);
+.btn-primary { 
+  background: #0ea5e9; 
+  color: white; 
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+}
+.btn-primary:hover { 
+  background: #0284c7; 
+  transform: translateY(-1px);
 }
 
-.btn-disconnect {
-    background: #f1f5f9;
-    color: #475569;
-    width: 100%;
-    max-width: 300px;
-    padding: 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s;
+.btn-secondary { background: #cbd5e1; color: #475569; }
+
+/* Sidebar Helpers (keeping existing styles slightly adjusted) */
+.help-card, .info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
-.btn-disconnect:hover {
-    background-color: #e2e8f0;
-    color: #1e293b;
+.help-card h3, .info-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
 }
 
-.toggle-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+.steps-list {
+  padding-left: 1.25rem;
+  color: #64748b;
+  line-height: 1.6;
 }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 56px;
-    height: 30px;
+.steps-list li { margin-bottom: 0.5rem; }
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+.info-item:last-child { border-bottom: none; }
+.logs-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #cbd5e1;
-    transition: 0.4s;
-    border-radius: 30px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 24px;
-    width: 24px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: #22c55e;
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-
+.logs-table { width: 100%; border-collapse: collapse; }
+.logs-table th { text-align: left; padding: 0.75rem; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+.logs-table td { padding: 0.75rem; border-bottom: 1px solid #e2e8f0; color: #475569; }
+.log-status.success { color: #166534; background: #dcfce7; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
