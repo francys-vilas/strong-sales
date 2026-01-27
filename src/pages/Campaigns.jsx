@@ -45,12 +45,23 @@ const Campaigns = () => {
 
   // Removed dedicated loading return to allow background visibility
 
+  if (loading) {
+      return (
+          <div className="campaigns-page loading-state" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '1rem' }}>
+              <div className="loader-spinner" style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              <p style={{ color: '#666' }}>Carregando campanhas...</p>
+              <style>{`
+                  @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                  }
+              `}</style>
+          </div>
+      );
+  }
+
   return (
     <div className="campaigns" style={{ position: 'relative', minHeight: '400px' }}>
-      {loading && (
-         <Loading text="Carregando campanhas..." />
-      )}
-
       <header className="page-header">
         <div>
           <h2>Minhas Campanhas</h2>

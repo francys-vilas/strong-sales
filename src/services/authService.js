@@ -113,5 +113,38 @@ export const authService = {
    */
   onAuthStateChange(callback) {
     return supabase.auth.onAuthStateChange(callback);
+  },
+
+  /**
+   * Get user organization
+   */
+  async getUserOrganization() {
+      const user = await this.getCurrentUser();
+      if (!user) return null;
+      
+      // 1. Get Profile to find Org ID
+      const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('organization_id')
+          .eq('id', user.id)
+          .single();
+      
+      if (profileError || !profile || !profile.organization_id) {
+           console.warn("Could not fetch profile or org id:", profileError);
+           return null;
+      }
+
+      // 2. Get Organization details
+      const { data, error } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('id', profile.organization_id)
+          .single();
+      
+      if (error) {
+          console.warn("Could not fetch organization:", error);
+          return null;
+      }
+      return data;
   }
 };
