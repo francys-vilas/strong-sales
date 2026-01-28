@@ -211,19 +211,13 @@ const NewCampaign = () => {
                             <p className="field-hint">Este é o jogo que seus clientes verão na página da campanha.</p>
                             
                             {/* Game Configuration Button */}
-                            <div style={{ marginTop: '1rem' }}>
+                            <div className="game-config-card">
                                 <button 
                                     type="button" 
-                                    className="btn btn-secondary"
+                                    className="game-config-btn"
                                     onClick={async () => {
-                                        // If we don't have an ID yet (new campaign), we might need to save first or warn.
-                                        // For better UX, let's ask to save first if it's new.
                                         if (!isEditMode) {
-                                            const confirm = window.confirm("Para configurar o jogo, precisamos salvar a campanha primeiro (Rascunho). Deseja salvar?");
-                                            if (confirm) {
-                                                // Trigger submit programmatically or just ask user to click save
-                                                // Simpler: Just allow editing if ID exists.
-                                            }
+                                            // Optional: Toast explaining they need to save
                                             return;
                                         }
                                         navigate(`/games?mode=edit&campaignId=${id}&gameType=${formData.game_type}`);
@@ -231,9 +225,14 @@ const NewCampaign = () => {
                                     disabled={!isEditMode}
                                     title={!isEditMode ? "Salve a campanha antes de configurar o jogo" : "Personalizar prêmios e cores"}
                                 >
-                                    ⚙️ Configurar Jogo (Prêmios, Cores, Chances)
+                                    <h5 style={{margin:0}}>⚙️ Configurar Jogo</h5>
+                                    <span style={{fontWeight:'normal', fontSize:'0.9em'}}>(Prêmios, Cores, Chances)</span>
                                 </button>
-                                {!isEditMode && <p style={{fontSize: '0.8rem', color: '#666', marginTop: '4px'}}>* Salve a campanha para liberar a configuração avançada.</p>}
+                                {!isEditMode && (
+                                    <p className="game-config-note">
+                                        * Você precisa <strong>salvar a campanha</strong> primeiro para liberar a configuração do jogo.
+                                    </p>
+                                )}
                             </div>
                         </div>
 
