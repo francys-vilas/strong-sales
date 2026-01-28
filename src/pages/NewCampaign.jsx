@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // Import useParams
-import { Save, X, Globe, MessageCircle, BarChart2 } from 'lucide-react'; 
+import { useNavigate, useParams } from 'react-router-dom';
+import { Save, X, Globe, MessageCircle, BarChart2 } from 'lucide-react';
+import { toast } from 'sonner';
 import './NewCampaign.css';
 
 import { supabase } from '../services/supabase';
@@ -45,7 +46,7 @@ const NewCampaign = () => {
             }
         } catch (error) {
             console.error('Error fetching campaign:', error);
-            alert('Erro ao carregar campanha.');
+            toast.error('Erro ao carregar detalhes da campanha.');
             navigate('/campaigns');
         }
     };
@@ -63,7 +64,7 @@ const NewCampaign = () => {
             const { data: { user } } = await supabase.auth.getUser();
             
             if (!user) {
-                alert('Você precisa estar logado.');
+                toast.error('Você precisa estar logado para criar uma campanha.');
                 return;
             }
 
@@ -99,12 +100,15 @@ const NewCampaign = () => {
             }
 
             if (error) throw error;
-
-            alert(isEditMode ? 'Campanha atualizada com sucesso!' : 'Campanha criada com sucesso!');
+            
+            toast.success(isEditMode ? 'Campanha atualizada com sucesso!' : 'Campanha criada com sucesso!', {
+                description: 'Você já pode configurar o jogo e começar a divulgar.',
+                duration: 4000
+            });
             navigate('/campaigns');
         } catch (error) {
             console.error('Error saving campaign:', error);
-            alert(`Erro ao salvar campanha: ${error.message}`);
+            toast.error(`Erro ao salvar campanha: ${error.message}`);
         } finally {
             setLoading(false);
         }

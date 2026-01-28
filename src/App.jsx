@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Campaigns from './pages/Campaigns';
@@ -55,6 +56,7 @@ function App() {
       </Route>
       <Route path="/play/:campaignId" element={<CampaignGame />} />
     </Routes>
+    <Toaster richColors position="top-right" />
     </>
   );
 }

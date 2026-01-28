@@ -1,0 +1,99 @@
+.success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.success-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.success-icon-container {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.success-message {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+.success-button {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(109, 40, 217, 0.3);
+}
+
+.success-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(109, 40, 217, 0.4);
+  filter: brightness(110%);
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffd300;
+  top: 0;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}

@@ -4,6 +4,7 @@ import { Eye, EyeOff, Mail, User, Lock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import logoIcon from '../assets/logo_icon.png';
 import styles from './Auth.module.css';
+import SuccessModal from '../components/SuccessModal';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -12,6 +13,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
     const navigate = useNavigate();
     const { register, loading } = useAuth();
 
@@ -27,15 +29,27 @@ const Register = () => {
         const result = await register(email, password, { full_name: name });
 
         if (result.success) {
-            alert('Cadastro realizado! Verifique seu email para confirmar.');
-            navigate('/login');
+            setShowSuccess(true);
         } else {
             setError(result.error);
         }
     };
 
+    const handleSuccessClose = () => {
+        setShowSuccess(false);
+        // Redirect to dashboard as user is likely auto-logged in by Supabase
+        navigate('/');
+    };
+
     return (
         <div className={styles.authContainer}>
+            <SuccessModal 
+                isOpen={showSuccess}
+                onClose={handleSuccessClose}
+                title="Conta Criada!"
+                message="Sua conta foi criada com sucesso. Bem-vindo ao Strong Sales!"
+            />
+
             {/* Left Side - Branding (Desktop Only) */}
             <div className={styles.brandingSide}>
                 <div className={styles.brandingContent}>

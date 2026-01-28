@@ -33,31 +33,7 @@ export const authService = {
 
     if (authError) throw authError;
 
-    // Create organization for the new user
-    if (authData.user) {
-      await this.createUserOrganization(authData.user.id, email);
-    }
-
     return authData;
-  },
-
-  /**
-   * Create organization for new user
-   */
-  async createUserOrganization(userId, email) {
-    const orgName = email.split('@')[0] + "'s Store";
-    
-    const { data, error } = await supabase
-      .from('organizations')
-      .insert([{
-        user_id: userId,
-        name: orgName,
-        created_at: new Date().toISOString()
-      }])
-      .select();
-
-    if (error) throw error;
-    return data[0];
   },
 
   /**

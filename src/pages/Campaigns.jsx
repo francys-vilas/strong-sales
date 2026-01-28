@@ -135,7 +135,7 @@ const Campaigns = () => {
                 <div className="campaign-header">
                   <div className="campaign-title-area">
                     <div className="campaign-order-controls">
-                      <span className="order-badge">#{campaign.display_order || currentIndex + 1}</span>
+                      <span className="order-badge">#{currentIndex + 1}</span>
                       <div className="order-buttons">
                         <button 
                           className="order-btn" 

@@ -19,6 +19,17 @@ import './Sidebar.css';
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [userEmail, setUserEmail] = React.useState('Carregando...');
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email);
+      }
+    };
+    fetchUser();
+  }, []);
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -47,7 +58,7 @@ const Sidebar = () => {
             <p className="logo-tagline">"Fazer negócio é nossa principal aptidão"</p>
           </div>
         </div>
-        <p className="user-info">contato@strongsales.com.br</p>
+        <p className="user-info">{userEmail}</p>
       </div>
 
       <nav className="sidebar-nav">

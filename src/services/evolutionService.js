@@ -15,11 +15,14 @@ export const evolutionService = {
     try {
       const user = await authService.getCurrentUser();
       if (!user) return;
+      
+      const org = await authService.getUserOrganization();
 
       const { error } = await supabase
         .from('evolution_api_logs')
         .insert([{
           user_id: user.id,
+          organization_id: org ? org.id : null,
           endpoint: details.endpoint,
           method: details.method,
           request_payload: details.requestPayload,
@@ -37,18 +40,20 @@ export const evolutionService = {
   },
 
   /**
-   * Sanitize email to generate a safe instance name.
+   * Sanitize string to generate a safe instance name.
    */
-  sanitizeInstanceName(email) {
-    // Ex: "john.doe@gmail.com" -> "john_doe_gmail_com"
-    return email.replace(/[^a-zA-Z0-9]/g, "_");
+  sanitizeInstanceName(input) {
+    if (!input) return "unknown";
+    // Works for emails or UUIDs
+    return input.replace(/[^a-zA-Z0-9]/g, "_");
   },
 
   /**
    * Create a new instance or return existing one.
+   * Now accepts optional instanceName override (e.g. Org ID)
    */
-  async createInstance(email) {
-    const instanceName = this.sanitizeInstanceName(email);
+  async createInstance(email, customInstanceName = null) {
+    const instanceName = customInstanceName || this.sanitizeInstanceName(email);
     const endpoint = `/instance/create`;
     const url = `${API_URL}${endpoint}`;
     
@@ -75,7 +80,7 @@ export const evolutionService = {
     let errorMessage = null;
 
     try {
-      // 3. Register/Upsert Instance in Supabase BEFORE API call (or after, but strictly managing state)
+      // 3. Register/Upsert Instance in Supabase BEFORE API call
       // We set status to 'connecting' initially
       if (user) {
           await supabase.from('evolution_instances').upsert({
@@ -112,7 +117,6 @@ export const evolutionService = {
     } catch (error) {
         errorMessage = error.message;
         
-        // If it already exists, we might want to update our DB status to 'unknown' or 'close' until we verify
         return {
             success: false,
             error: errorMessage,
@@ -135,18 +139,13 @@ export const evolutionService = {
   /**
    * Fetch connection state/QR Code for an existing instance.
    */
-  /**
-   * Fetch connection state/QR Code for an existing instance.
-   */
   async fetchInstanceConnect(instanceName) {
     const endpoint = `/instance/connect/${instanceName}`;
     const url = `${API_URL}${endpoint}`;
     
     try {
-        // 1. Get User and Organization for text-book sync
         const user = await authService.getCurrentUser();
-        // We reuse existing org if possible, or fetch it.
-        // For sync, we mainly need to update the status of the existing record.
+        const org = await authService.getUserOrganization();
 
         const response = await fetch(url, {
             method: "GET",
@@ -162,7 +161,6 @@ export const evolutionService = {
         let picture = null;
         
         if (response.ok) {
-            // Usually returns { instance: { state: 'open', ... } } or { base64: ... }
             if (responseData.instance) {
                  currentStatus = responseData.instance.state;
                  jid = responseData.instance.ownerJid;
@@ -171,7 +169,6 @@ export const evolutionService = {
                  currentStatus = 'qrcode'; // Has QR, waiting for scan
             }
         } else {
-             // If 404, it means deleted.
              if (status === 404) {
                  currentStatus = 'close';
              }
@@ -179,8 +176,10 @@ export const evolutionService = {
         
         // Upsert/Update the DB record to match reality
         if (user && instanceName) {
+            // Update providing Org ID too if missing
              await supabase.from('evolution_instances').upsert({
                  user_id: user.id,
+                 organization_id: org ? org.id : null,
                  instance_name: instanceName,
                  status: currentStatus,
                  connection_status: currentStatus,
@@ -205,45 +204,53 @@ export const evolutionService = {
 
   /**
    * Get logs from Supabase (API Commands + Webhook Events)
+   * Scoped by Organization OR User
    */
   async getLogs() {
       try {
           const user = await authService.getCurrentUser();
+          const org = await authService.getUserOrganization();
+          
           if (!user) return [];
 
-          // 1. Fetch API Logs (Commands we sent)
-          const { data: apiLogs } = await supabase
+          // 1. Fetch API Logs
+          let query = supabase
               .from('evolution_api_logs')
               .select('*')
-              .eq('user_id', user.id)
               .neq('method', 'GET') // Hide polling
               .order('created_at', { ascending: false })
               .limit(30);
+          
+          if (org) {
+               // If user has org, fetch logs for that org (shared view) OR user's own logs (legacy compatibility)
+               query = query.or(`organization_id.eq.${org.id},user_id.eq.${user.id}`);
+          } else {
+               query = query.eq('user_id', user.id);
+          }
+
+          const { data: apiLogs } = await query;
 
           // 2. Fetch Webhooks (Events we received)
-          // We use the names found in API logs to know which instances belonged to this user,
-          // enabling us to see webhooks even after the instance is deleted from the active table.
-          const historicalInstances = [...new Set(apiLogs.map(log => {
-              // Extract instance name from endpoint or payload if possible, 
-              // but simplest is to assume the log entry belongs to the user context.
-              // Note: api_logs doesn't store instance_name explicitly in a column, 
-              // but we can assume the current user's sanitized email or extract from request_payload.
-              // A better way: The service usually generates instance name from email.
-              return evolutionService.sanitizeInstanceName(user.email); 
-          }))];
-
-          // Also add the current one just in case
-          const currentInstanceName = evolutionService.sanitizeInstanceName(user.email);
-          if (!historicalInstances.includes(currentInstanceName)) {
-              historicalInstances.push(currentInstanceName);
-          }
+          // We need to know which instance names to look for.
+          // Org-based instance name:
+          let targetInstanceNames = [];
           
+          if (org) {
+              const orgInstanceName = this.sanitizeInstanceName(org.id);
+              targetInstanceNames.push(orgInstanceName);
+          }
+           // Add User-based instance name (Legacy/Fallback)
+          const userInstanceName = this.sanitizeInstanceName(user.email);
+          if (!targetInstanceNames.includes(userInstanceName)) {
+              targetInstanceNames.push(userInstanceName);
+          }
+
           let webhookLogs = [];
-          if (historicalInstances.length > 0) {
+          if (targetInstanceNames.length > 0) {
               const { data: hooks } = await supabase
                   .from('evolution_webhooks')
                   .select('*')
-                  .in('instance_name', historicalInstances)
+                  .in('instance_name', targetInstanceNames)
                   .eq('event_type', 'connection.update')
                   .order('created_at', { ascending: false })
                   .limit(30);

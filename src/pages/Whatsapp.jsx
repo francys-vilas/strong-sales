@@ -15,7 +15,8 @@ const Whatsapp = () => {
   const [logs, setLogs] = useState([]);
   const [ownerJid, setOwnerJid] = useState(null);
   const [pageLoading, setPageLoading] = useState(true);
-  
+  const [orgName, setOrgName] = useState(null);
+
   const [isConnecting, setIsConnecting] = useState(false);
   const connectionTimeoutRef = React.useRef(null);
 
@@ -26,56 +27,62 @@ const Whatsapp = () => {
 
   const checkInitialStatus = async () => {
       setPageLoading(true);
-      const user = await authService.getCurrentUser();
-      if (!user) {
+      try {
+          const user = await authService.getCurrentUser();
+          const org = await authService.getUserOrganization();
+          
+          if (!user || !org) {
+              setPageLoading(false);
+              return;
+          }
+          
+          setOrgName(org.name || "Sua Empresa");
+
+          // Use Organization ID as Instance Name
+          const myInstanceName = evolutionService.sanitizeInstanceName(org.id);
+          setInstanceName(myInstanceName);
+
+          // 1. Fetch from API (Live Status) which also updates DB
+          const statusResult = await evolutionService.fetchInstanceConnect(myInstanceName);
+          
+          let foundJid = null;
+          let foundStatus = 'close';
+
+          if (statusResult.success && statusResult.data && statusResult.data.instance) {
+               foundStatus = statusResult.data.instance.state;
+               foundJid = statusResult.data.instance.ownerJid;
+          }
+
+          // 2. Fetch from DB (as Backup or if API didn't return JID but we have it stored)
+          const { data: dbInstance } = await supabase
+              .from('evolution_instances')
+              .select('*')
+              .eq('instance_name', myInstanceName)
+              .single();
+
+          if (dbInstance) {
+              if (!statusResult.success) {
+                  foundStatus = dbInstance.status;
+              }
+              if (!foundJid && dbInstance.owner_jid) {
+                  foundJid = dbInstance.owner_jid;
+              }
+          }
+
+          if (foundStatus === 'open') {
+               setIsConnected(true);
+               if (foundJid) {
+                   const phone = foundJid.split('@')[0];
+                   setOwnerJid(`+${phone}`); 
+               }
+          } else {
+              setIsConnected(false);
+          }
+      } catch (err) {
+          console.error("Check status failed", err);
+      } finally {
           setPageLoading(false);
-          return;
       }
-      
-      const myInstanceName = evolutionService.sanitizeInstanceName(user.email);
-      setInstanceName(myInstanceName);
-
-      // 1. Fetch from API (Live Status) which also updates DB
-      const statusResult = await evolutionService.fetchInstanceConnect(myInstanceName);
-      
-      let foundJid = null;
-      let foundStatus = 'close';
-
-      if (statusResult.success && statusResult.data && statusResult.data.instance) {
-           foundStatus = statusResult.data.instance.state;
-           foundJid = statusResult.data.instance.ownerJid;
-      }
-
-      // 2. Fetch from DB (as Backup or if API didn't return JID but we have it stored)
-      // Sometimes API returns "open" but missing detail if it's just a lighter ping? 
-      // Or if API fails, we show what we know.
-      const { data: dbInstance } = await supabase
-          .from('evolution_instances')
-          .select('*')
-          .eq('instance_name', myInstanceName)
-          .single();
-
-      if (dbInstance) {
-          // If API failed, trust DB. If API worked, trust API status but maybe DB has JID?
-          if (!statusResult.success) {
-              foundStatus = dbInstance.status;
-          }
-          if (!foundJid && dbInstance.owner_jid) {
-              foundJid = dbInstance.owner_jid;
-          }
-      }
-
-      if (foundStatus === 'open') {
-           setIsConnected(true);
-           if (foundJid) {
-               const phone = foundJid.split('@')[0];
-               setOwnerJid(`+${phone}`); 
-           }
-      } else {
-          setIsConnected(false);
-      }
-      
-      setPageLoading(false);
   };
 
   useEffect(() => {
@@ -85,9 +92,11 @@ const Whatsapp = () => {
     // Subscribe to Realtime updates for connection status AND logs
     const setupRealtime = async () => {
         const user = await authService.getCurrentUser();
-        if (!user) return;
-        const email = user.email;
-        const myInstanceName = evolutionService.sanitizeInstanceName(email);
+        const org = await authService.getUserOrganization();
+
+        if (!user || !org) return;
+        
+        const myInstanceName = evolutionService.sanitizeInstanceName(org.id);
 
         // 1. Connection Status Updates (Same as before)
         const statusChannel = supabase
@@ -159,7 +168,7 @@ const Whatsapp = () => {
                     event: 'INSERT',
                     schema: 'public',
                     table: 'evolution_api_logs',
-                    filter: `user_id=eq.${user.id}`
+                    filter: `organization_id=eq.${org.id}`
                 },
                 () => {
                     // When a new log is inserted (e.g. user clicked Connect), refresh list
@@ -243,13 +252,19 @@ const Whatsapp = () => {
 
     try {
         const user = await authService.getCurrentUser();
+        const org = await authService.getUserOrganization();
+
         if (!user || !user.email) {
             throw new Error("Usuário não autenticado ou sem e-mail.");
         }
+        if (!org) {
+             throw new Error("Organização não encontrada.");
+        }
 
-        // 1. Try create instance
+        // 1. Try create instance with Org ID as name
         addLog("Criando Instância", "Enviando");
-        const createResult = await evolutionService.createInstance(user.email);
+        // Pass org.id as the custom instance name
+        const createResult = await evolutionService.createInstance(user.email, org.id);
         setInstanceName(createResult.instanceName);
 
         if (createResult.success) {
@@ -303,14 +318,18 @@ const Whatsapp = () => {
   };
 
   const handleDisconnect = async () => {
-    if (!instanceName && !evolutionService.sanitizeInstanceName) return; 
-    
-    // Fallback if instanceName state is lost but we know user
+    // If we have state instanceName use it, else try strict org logic
     let targetInstance = instanceName;
+    
     if (!targetInstance) {
-         const user = await authService.getCurrentUser();
-         if (user) targetInstance = evolutionService.sanitizeInstanceName(user.email);
+         // Fallback by fetching org again
+         const org = await authService.getUserOrganization();
+         if (org) {
+             targetInstance = evolutionService.sanitizeInstanceName(org.id);
+         }
     }
+     
+    if (!targetInstance) return;
     
     
     // Optimistic UI update
@@ -452,7 +471,32 @@ const Whatsapp = () => {
             <h3>Informações da Instância</h3>
             <div className="info-item">
               <span className="label">Instância:</span>
-              <span className="value" style={{fontSize: "0.8rem"}}>{instanceName || "-"}</span>
+              <span 
+                  className="value instance-id" 
+                  title={instanceName || ""}
+                  style={{cursor: 'pointer', fontSize: "0.85rem"}}
+                  onClick={() => {
+                      if (instanceName) {
+                          navigator.clipboard.writeText(instanceName);
+                          // Optional: Simple feedback
+                          const el = document.getElementById('copy-feedback');
+                          if (el) {
+                              el.style.opacity = '1';
+                              setTimeout(() => el.style.opacity = '0', 2000);
+                          }
+                      }
+                  }}
+              >
+                  {instanceName ? `${instanceName.substring(0, 15)}...` : "-"}
+                  <span id="copy-feedback" style={{
+                      opacity: 0, 
+                      transition: 'opacity 0.3s', 
+                      marginLeft: '8px', 
+                      fontSize: '0.7em', 
+                      color: '#2ecc71',
+                      fontWeight: 'bold'
+                  }}>Copiado!</span>
+              </span>
             </div>
             {ownerJid && (
                 <div className="info-item">

@@ -246,13 +246,24 @@ const MinhaLoja = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="minha-loja-page loading-state" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '1rem' }}>
+        <div className="loader-spinner" style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ color: '#666' }}>Carregando dados da loja...</p>
+        <style>{`
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div className="minha-loja-page">
-      {loading && (
-        <div style={{ position: 'sticky', top: 0, height: '100vh', zIndex: 50, marginBottom: '-100vh' }}>
-          <Loading text="Carregando dados da loja..." />
-        </div>
-      )}
+
       
       <header className="page-header">
         <div>
