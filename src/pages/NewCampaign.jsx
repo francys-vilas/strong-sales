@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Globe, MessageCircle, BarChart2 } from 'lucide-react';
+import { Save, X, Globe, MessageCircle, BarChart2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import './NewCampaign.css';
 
@@ -17,8 +17,41 @@ const NewCampaign = () => {
         target_url: '',
         conversion_goal: 'Cadastro',
         game_type: 'roulette',
+        game_template_id: ''
     });
     const [loading, setLoading] = useState(false);
+    
+    // Template System State
+    const [organizationId, setOrganizationId] = useState(null);
+    const [templates, setTemplates] = useState([]);
+
+    // 1. Fetch User Organization & Templates
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(user) {
+                const { data: profile } = await supabase.from('profiles').select('organization_id').eq('id', user.id).single();
+                if(profile && profile.organization_id) {
+                    setOrganizationId(profile.organization_id);
+                    
+                    // Fetch templates
+                    const { data: temps, error } = await supabase
+                        .from('game_templates')
+                        .select('*')
+                        .eq('organization_id', profile.organization_id);
+                    
+                    if (temps) setTemplates(temps);
+                }
+            }
+        };
+        fetchInitialData();
+    }, []);
+
+    // Also enable re-fetching templates on window focus? 
+    // Simplified: Just button click reloads? Or just hope user refreshes.
+    
+    // Filter templates for current game type
+    const availableTemplates = templates.filter(t => t.game_type === formData.game_type);
 
     useEffect(() => {
         if (isEditMode) {
@@ -42,6 +75,7 @@ const NewCampaign = () => {
                     target_url: data.target_url,
                     conversion_goal: data.conversion_goal,
                     game_type: data.game_type,
+                    game_template_id: data.game_template_id || '',
                 });
             }
         } catch (error) {
@@ -210,29 +244,49 @@ const NewCampaign = () => {
                             </div>
                             <p className="field-hint">Este é o jogo que seus clientes verão na página da campanha.</p>
                             
-                            {/* Game Configuration Button */}
-                            <div className="game-config-card">
-                                <button 
-                                    type="button" 
-                                    className="game-config-btn"
-                                    onClick={async () => {
-                                        if (!isEditMode) {
-                                            // Optional: Toast explaining they need to save
-                                            return;
-                                        }
-                                        navigate(`/games?mode=edit&campaignId=${id}&gameType=${formData.game_type}`);
-                                    }}
-                                    disabled={!isEditMode}
-                                    title={!isEditMode ? "Salve a campanha antes de configurar o jogo" : "Personalizar prêmios e cores"}
-                                >
-                                    <h5 style={{margin:0}}>⚙️ Configurar Jogo</h5>
-                                    <span style={{fontWeight:'normal', fontSize:'0.9em'}}>(Prêmios, Cores, Chances)</span>
-                                </button>
-                                {!isEditMode && (
-                                    <p className="game-config-note">
-                                        * Você precisa <strong>salvar a campanha</strong> primeiro para liberar a configuração do jogo.
-                                    </p>
-                                )}
+                            {/* GAME CONFIGURATION & TEMPLATE SELECTION */}
+                            <div className="form-group" style={{ marginTop: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                <label htmlFor="game_template_id" style={{fontWeight: 600}}>Modelo de Configuração</label>
+                                <p className="field-hint" style={{marginBottom: '0.5rem'}}>Escolha um modelo de prêmios e cores para este jogo.</p>
+                                
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <div className="select-wrapper" style={{ flex: 1 }}>
+                                        <select
+                                            id="game_template_id"
+                                            name="game_template_id"
+                                            value={formData.game_template_id}
+                                            onChange={handleChange}
+                                            className="select-field"
+                                            required={true}
+                                        >
+                                            <option value="">Selecione um modelo...</option>
+                                            {availableTemplates.length > 0 ? (
+                                                availableTemplates.map(t => (
+                                                    <option key={t.id} value={t.id}>{t.name}</option>
+                                                ))
+                                            ) : (
+                                                <option disabled>Nenhum modelo encontrado para este jogo.</option>
+                                            )}
+                                        </select>
+                                    </div>
+                                    
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-secondary"
+                                        style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', whiteSpace: 'nowrap' }}
+                                        onClick={() => {
+                                            // Open Games Editor in new tab to create template
+                                            window.open(`/games?mode=edit&gameType=${formData.game_type}`, '_blank');
+                                        }}
+                                        title="Criar novo modelo de jogo"
+                                    >
+                                        <Plus size={16} /> Novo Modelo
+                                    </button>
+                                </div>
+                                <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#64748b' }}>
+                                    <Globe size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                                    {availableTemplates.length} modelos disponíveis para {formData.game_type}.
+                                </div>
                             </div>
                         </div>
 
