@@ -1,0 +1,126 @@
+
+.router-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 20px;
+}
+
+.router-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    gap: 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.login-card, .status-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+}
+
+.login-card h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.login-card p {
+    color: #94a3b8;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group svg {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.phone-input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.phone-input:focus {
+    border-color: #3b82f6;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s;
+}
+
+.start-btn:hover {
+    transform: scale(1.02);
+}
+
+.success-icon {
+    color: #22c55e;
+    margin-bottom: 20px;
+}

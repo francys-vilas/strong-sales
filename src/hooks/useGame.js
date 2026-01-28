@@ -35,6 +35,12 @@ export const useGame = () => {
 
   useEffect(() => {
     fetchCampaign();
+    // Check for saved guest
+    const savedPhone = localStorage.getItem('guest_phone');
+    if (savedPhone) {
+        setPhoneNumber(savedPhone);
+        setShowAuthModal(false);
+    }
   }, [campaignId]);
 
   const fetchCampaign = async () => {
@@ -57,16 +63,29 @@ export const useGame = () => {
     setLeadSubmitting(true);
     try {
       const leadData = leadService.captureLeadMetadata(campaign.id, phoneNumber);
+      
+      // Save guest immediately (allow play even if DB fails)
+      localStorage.setItem('guest_phone', phoneNumber);
+      
+      // Attempt to save to DB
+      console.log('Saving lead to DB:', leadData);
       await leadService.createLead(leadData);
       await gameService.trackGamePlay(campaign.id);
+      
       setShowAuthModal(false);
     } catch (err) {
-      console.error('Error saving lead:', err);
-      // Still allow user to play even if lead save fails
+      console.error('Error saving lead (but proceeding to game):', err);
+      // Ensure we still hide modal/allow play
       setShowAuthModal(false);
     } finally {
       setLeadSubmitting(false);
     }
+  };
+
+  const resetGuest = () => {
+      localStorage.removeItem('guest_phone');
+      setPhoneNumber('');
+      setShowAuthModal(true);
   };
 
   const handlePhoneChange = (e) => {
@@ -105,7 +124,12 @@ export const useGame = () => {
         isForFriend: prizeRecipient === 'friend'
       };
 
-      await gameService.saveWinner(campaign.id, winnerData);
+      const winner = await gameService.saveWinner(campaign.id, winnerData);
+      
+      // Mark as redeemed immediately for the trail logic
+      if (winner && winner.id) {
+          await gameService.redeemPrize(winner.id);
+      }
 
       const newCompleted = [...new Set([...completedCampaigns, pendingRedemption])];
       setCompletedCampaigns(newCompleted);
@@ -155,6 +179,7 @@ export const useGame = () => {
     handleGameFinish,
     handlePerformAction,
     handleRedeem,
-    handleNodeClick
+    handleNodeClick,
+    resetGuest
   };
 };

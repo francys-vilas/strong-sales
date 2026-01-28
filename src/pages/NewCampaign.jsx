@@ -205,6 +205,32 @@ const NewCampaign = () => {
                                 </select>
                             </div>
                             <p className="field-hint">Este é o jogo que seus clientes verão na página da campanha.</p>
+                            
+                            {/* Game Configuration Button */}
+                            <div style={{ marginTop: '1rem' }}>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary"
+                                    onClick={async () => {
+                                        // If we don't have an ID yet (new campaign), we might need to save first or warn.
+                                        // For better UX, let's ask to save first if it's new.
+                                        if (!isEditMode) {
+                                            const confirm = window.confirm("Para configurar o jogo, precisamos salvar a campanha primeiro (Rascunho). Deseja salvar?");
+                                            if (confirm) {
+                                                // Trigger submit programmatically or just ask user to click save
+                                                // Simpler: Just allow editing if ID exists.
+                                            }
+                                            return;
+                                        }
+                                        navigate(`/games?mode=edit&campaignId=${id}&gameType=${formData.game_type}`);
+                                    }}
+                                    disabled={!isEditMode}
+                                    title={!isEditMode ? "Salve a campanha antes de configurar o jogo" : "Personalizar prêmios e cores"}
+                                >
+                                    ⚙️ Configurar Jogo (Prêmios, Cores, Chances)
+                                </button>
+                                {!isEditMode && <p style={{fontSize: '0.8rem', color: '#666', marginTop: '4px'}}>* Salve a campanha para liberar a configuração avançada.</p>}
+                            </div>
                         </div>
 
                         <div className="form-group">

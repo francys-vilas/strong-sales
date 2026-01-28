@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Trophy, RotateCw, Plus, Trash2, Grid, Target, Lightbulb, Keyboard, Shuffle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Trophy, RotateCw, Plus, Trash2, Grid, Target, Lightbulb, Keyboard, Shuffle, Save, ArrowLeft } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './Games.module.css';
+import { supabase } from '../services/supabase';
 
 // Import reusable games
 import RouletteGame from '../components/games/RouletteGame';
@@ -20,12 +22,95 @@ const DEFAULT_PARTICIPANTS = [
 ];
 
 const Games = () => {
-  const [activeTab, setActiveTab] = useState('roulette');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const mode = searchParams.get('mode'); // 'edit', 'demo'
+  const campaignId = searchParams.get('campaignId');
+  const gameType = searchParams.get('gameType') || 'roulette';
+
+  const [activeTab, setActiveTab] = useState(gameType);
   const [winner, setWinner] = useState(null);
   
+  // Editor State
+  const [loadingConfig, setLoadingConfig] = useState(false);
+  const [savingConfig, setSavingConfig] = useState(false);
+  const [gameConfig, setGameConfig] = useState(null);
+
   // Roulette settings (specific to full games page)
   const [participants, setParticipants] = useState(DEFAULT_PARTICIPANTS);
   const [newParticipant, setNewParticipant] = useState('');
+
+  // Load Campaign Config if in Edit Mode
+  useEffect(() => {
+    if (mode === 'edit' && campaignId) {
+      loadCampaignConfig();
+      setActiveTab(gameType);
+    }
+  }, [mode, campaignId]);
+
+  const loadCampaignConfig = async () => {
+    setLoadingConfig(true);
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('game_config')
+        .eq('id', campaignId)
+        .single();
+      
+      if (error) throw error;
+      
+      if (data?.game_config && Object.keys(data.game_config).length > 0) {
+         setGameConfig(data.game_config);
+         if (data.game_config.prizes) {
+             // Extract labels for roulette preview
+             setParticipants(data.game_config.prizes.map(p => p.label));
+         }
+      } else {
+        // Initialize default config if empty
+        setGameConfig({
+            difficulty: 'medium',
+            prizes: DEFAULT_PARTICIPANTS.map(p => ({ label: p, color: '#3b82f6', probability: 10, is_win: true }))
+        });
+      }
+    } catch (err) {
+      console.error("Error loading config:", err);
+      alert("Erro ao carregar configuração.");
+    } finally {
+        setLoadingConfig(false);
+    }
+  };
+
+  const saveConfig = async () => {
+      setSavingConfig(true);
+      try {
+          // Construct the final config object based on current UI state
+          // For now, let's sync participants state back to config
+          // In a real app, we would have a dedicated "Prize Editor" form
+          const updatedConfig = {
+              ...gameConfig,
+              prizes: participants.map(label => ({
+                  label,
+                  color:  `#${Math.floor(Math.random()*16777215).toString(16)}`, // Random color for now or preserve
+                  probability: 100 / participants.length, // Equal chance for now
+                  is_win: true
+              }))
+          };
+
+          const { error } = await supabase
+            .from('campaigns')
+            .update({ game_config: updatedConfig })
+            .eq('id', campaignId);
+
+          if (error) throw error;
+          alert("Configuração salva com sucesso!");
+          navigate(`/campaigns/new/${campaignId}`); // Go back to campaign
+      } catch (err) {
+          console.error("Error saving config:", err);
+          alert("Erro ao salvar.");
+      } finally {
+          setSavingConfig(false);
+      }
+  };
 
   const handleAddParticipant = () => {
     if (newParticipant.trim()) {
@@ -38,16 +123,32 @@ const Games = () => {
     setParticipants(participants.filter((_, i) => i !== index));
   };
 
+  const isEditor = mode === 'edit';
+
   return (
     <div className="page-container">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Área de Jogos</h1>
-          <p className="page-subtitle">Gamificação para premiar seus melhores clientes e vendedores</p>
+          <h1 className="page-title">{isEditor ? 'Configurar Jogo' : 'Área de Jogos'}</h1>
+          <p className="page-subtitle">
+            {isEditor ? 'Personalize o jogo da sua campanha' : 'Gamificação para premiar seus melhores clientes e vendedores'}
+          </p>
         </div>
+        {isEditor && (
+             <div style={{ display: 'flex', gap: '1rem' }}>
+                <button className="btn btn-secondary" onClick={() => navigate(`/campaigns/new/${campaignId}`)}>
+                    <ArrowLeft size={18} /> Voltar
+                </button>
+                <button className="btn btn-primary" onClick={saveConfig} disabled={savingConfig}>
+                    <Save size={18} /> {savingConfig ? 'Salvando...' : 'Salvar Configuração'}
+                </button>
+             </div>
+        )}
       </div>
 
       <div className={styles.gamesLayout}>
+        {/* Hide tabs in Editor Mode if we want to focus on just one game */}
+        {!isEditor && (
         <div className={styles.gamesTabs}>
           <button className={`${styles.gameTab} ${activeTab === 'roulette' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('roulette')}>🎡 Roleta</button>
           <button className={`${styles.gameTab} ${activeTab === 'slots' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('slots')}>🎰 Caça-Níquel</button>
@@ -60,8 +161,10 @@ const Games = () => {
           <button className={`${styles.gameTab} ${activeTab === 'guess' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('guess')}><Shuffle size={16}/> Adivinhe</button>
           <button className={`${styles.gameTab} ${activeTab === 'hangman' ? styles.gameTabActive : ''}`} onClick={() => setActiveTab('hangman')}><Keyboard size={16}/> Forca</button>
         </div>
+        )}
 
         <div className={styles.gameContainer}>
+            {loadingConfig && <p>Carregando configuração...</p>}
           
           {/* ROULETTE */}
           {activeTab === 'roulette' && (
@@ -75,7 +178,7 @@ const Games = () => {
                   <input 
                     type="text" 
                     className="input-field" 
-                    placeholder="Adicionar opção..." 
+                    placeholder="Adicionar Prêmio/Opção..." 
                     value={newParticipant} 
                     onChange={(e) => setNewParticipant(e.target.value)} 
                     onKeyPress={(e) => e.key === 'Enter' && handleAddParticipant()} 
@@ -94,50 +197,16 @@ const Games = () => {
             </div>
           )}
 
-          {/* SLOT MACHINE */}
-          {activeTab === 'slots' && (
-            <SlotGame onFinish={(m) => setWinner(m)} />
-          )}
-
-          {/* JOKENPO */}
-          {activeTab === 'jokenpo' && (
-            <JokenpoGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* MEMORY */}
-          {activeTab === 'memory' && (
-            <MemoryGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* SCRATCH */}
-          {activeTab === 'scratch' && (
-            <ScratchGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* TIC TAC TOE */}
-          {activeTab === 'tictactoe' && (
-              <TicTacToeGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* WHACK A MOLE */}
-          {activeTab === 'whack' && (
-              <WhackAMoleGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* SIMON */}
-          {activeTab === 'simon' && (
-              <SimonGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* GUESS NUMBER */}
-          {activeTab === 'guess' && (
-              <GuessNumberGame onFinish={(r) => setWinner(r)} />
-          )}
-
-          {/* HANGMAN */}
-          {activeTab === 'hangman' && (
-              <HangmanGame onFinish={(r) => setWinner(r)} />
-          )}
+          {/* OTHER GAMES (Hidden in Editor Mode if activeTab != game) */}
+          {activeTab === 'slots' && <SlotGame onFinish={(m) => setWinner(m)} />}
+          {activeTab === 'jokenpo' && <JokenpoGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'memory' && <MemoryGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'scratch' && <ScratchGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'tictactoe' && <TicTacToeGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'whack' && <WhackAMoleGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'simon' && <SimonGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'guess' && <GuessNumberGame onFinish={(r) => setWinner(r)} />}
+          {activeTab === 'hangman' && <HangmanGame onFinish={(r) => setWinner(r)} />}
 
           {winner && (
             <div className={styles.winnerOverlay}>

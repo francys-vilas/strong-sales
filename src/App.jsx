@@ -20,6 +20,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 
+import CampaignRouter from './components/CampaignRouter';
+
 function App() {
   return (
     <>
@@ -29,6 +31,9 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       
+      {/* Smart Router for Shops */}
+      <Route path="/app/:orgId" element={<CampaignRouter />} />
+
       <Route path="/" element={
         <ProtectedRoute>
           <Layout />

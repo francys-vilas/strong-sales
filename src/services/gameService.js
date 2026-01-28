@@ -12,7 +12,7 @@ export const gameService = {
   async getCampaignForGame(campaignId) {
     const { data, error } = await supabase
       .from('campaigns')
-      .select('*')
+      .select('*, organizations(name)')
       .eq('id', campaignId)
       .single();
 
@@ -100,5 +100,54 @@ export const gameService = {
 
     if (error) throw error;
     return data || [];
+  },
+
+  /**
+   * Redeem prize for a winner
+   */
+  async redeemPrize(winnerId) {
+    const { data, error } = await supabase
+      .from('winners')
+      .update({ 
+        is_redeemed: true,
+        redeemed_at: new Date().toISOString()
+      })
+      .eq('id', winnerId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Get Trail Status (Campaigns + User History)
+   */
+  async getCampaignTrailStatus(orgId, phone) {
+    // 1. Get All Active Campaigns for Org
+    const { data: campaigns, error: campError } = await supabase
+      .from('campaigns')
+      .select('*')
+      .eq('organization_id', orgId)
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (campError) throw campError;
+    if (!campaigns || campaigns.length === 0) return { campaigns: [], nextStep: null };
+
+    // 2. Get User History (Leads & Winners)
+    // We only need to know if they played (lead) and if they won/redeemed (winner)
+    const { data: winners, error: winError } = await supabase
+        .from('winners')
+        .select('*')
+        .eq('phone', phone)
+        .in('campaign_id', campaigns.map(c => c.id));
+
+    if (winError) throw winError;
+
+    return {
+        campaigns,
+        winners: winners || []
+    };
   }
 };

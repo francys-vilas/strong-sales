@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Link2, Settings, Trash2, TrendingUp, Users, Gamepad2, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
 import Loading from '../components/Loading';
+import LeadsModal from '../components/LeadsModal';
 import { useCampaigns } from '../hooks/useCampaigns';
 import './Campaigns.css';
 
@@ -20,6 +21,7 @@ const Campaigns = () => {
   } = useCampaigns();
 
   const [expandedCampaigns, setExpandedCampaigns] = useState(new Set());
+  const [selectedCampaignForLeads, setSelectedCampaignForLeads] = useState(null);
 
 
 
@@ -179,6 +181,9 @@ const Campaigns = () => {
                     <Link to={`/play/${campaign.id}`} className="icon-btn" title="Visualizar Jogo">
                       <Gamepad2 size={18} />
                     </Link>
+                    <button className="icon-btn" title="Visualizar Leads" onClick={() => setSelectedCampaignForLeads(campaign)}>
+                      <Users size={18} />
+                    </button>
                     <button className="icon-btn" title="Copiar Link" onClick={() => {
                         navigator.clipboard.writeText(campaign.target_url);
                         alert("Link copiado!");
@@ -286,6 +291,14 @@ const Campaigns = () => {
             );
           })}
         </div>
+      )}
+
+      
+      {selectedCampaignForLeads && (
+        <LeadsModal 
+          campaign={selectedCampaignForLeads} 
+          onClose={() => setSelectedCampaignForLeads(null)} 
+        />
       )}
     </div>
   );

@@ -42,6 +42,37 @@ const CAMPAIGNS = {
   }
 };
 
+const formatPhone = (value) => {
+  if (!value) return "";
+  
+  // Clean non digits
+  const numbers = value.replace(/\D/g, "");
+  
+  // Limit to 11 digits
+  const char = { 0: "(", 2: ") ", 7: "-" };
+  let formatted = "";
+  
+  for (let i = 0; i < numbers.length; i++) {
+      if (char[i]) formatted += char[i];
+      formatted += numbers[i];
+  }
+  
+  // Simple masking logic based on length
+  // Or better: use standard replace logic
+  let v = numbers;
+  if (v.length > 11) v = v.slice(0, 11);
+  
+  if (v.length > 10) {
+      return v.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3");
+  } else if (v.length > 5) {
+      return v.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+  } else if (v.length > 2) {
+      return v.replace(/^(\d\d)(\d{0,5}).*/, "($1) $2");
+  } else {
+      return v.replace(/^(\d*)/, "($1");
+  }
+};
+
 const CampaignGame = () => {
   const {
     campaign,
@@ -69,13 +100,18 @@ const CampaignGame = () => {
     handleGameFinish,
     handlePerformAction,
     handleRedeem,
-    handleNodeClick
+    handleNodeClick,
+    resetGuest
   } = useGame();
 
   const handlePlayNext = () => {
-    const nextId = campaign?.nextId;
-    if (nextId) {
-      window.location.href = `/play/${nextId}`;
+    // Redirect to the Smart Router to determine next step
+    if (campaign?.organization_id) {
+        window.location.href = `/app/${campaign.organization_id}`;
+    } else {
+        // Fallback or Mock
+        const nextId = campaign?.nextId;
+        if (nextId) window.location.href = `/play/${nextId}`;
     }
   };
 
@@ -90,6 +126,43 @@ const CampaignGame = () => {
 
   return (
     <div className={gameState === 'trail' ? styles.trailBackground : styles.gameContainer}>
+      {/* Guest Identification Bar */}
+      {!showAuthModal && phoneNumber && (
+        <div style={{
+            background: 'rgba(255,255,255,0.9)', 
+            padding: '0.5rem 1rem', 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            zIndex: 100, 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            fontSize: '0.8rem',
+            backdropFilter: 'blur(4px)',
+            borderBottom: '1px solid rgba(0,0,0,0.05)'
+        }}>
+            <span style={{color: '#64748b', marginRight: '0.5rem'}}>Jogando como:</span>
+            <strong style={{color: '#334155'}}>{formatPhone(phoneNumber)}</strong>
+            <button 
+                onClick={resetGuest}
+                style={{
+                    marginLeft: '1rem', 
+                    color: '#ef4444', 
+                    textDecoration: 'underline', 
+                    fontWeight: '600',
+                    fontSize: '0.75rem',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer'
+                }}
+            >
+                Trocar
+            </button>
+        </div>
+      )}
+
       {/* Lead Capture Modal */}
       {showAuthModal && (
         <div className={styles.overlay}>
@@ -102,8 +175,9 @@ const CampaignGame = () => {
                 type="tel" 
                 placeholder="(00) 00000-0000" 
                 className={styles.input}
-                value={phoneNumber}
+                value={formatPhone(phoneNumber)}
                 onChange={handlePhoneChange}
+                maxLength="15"
                 required
               />
               <button type="submit" className={styles.submitButton} disabled={leadSubmitting}>
@@ -233,8 +307,8 @@ const CampaignGame = () => {
             <span>Sair do Jogo</span>
             </button>
             <div className={styles.brand}>
-            <MessageCircle size={24} className={styles.brandIcon} />
-            <span>Strong Sales</span>
+            {/* Icon removed per user request */}
+            <span>{campaign?.organizations?.name || ''}</span>
             </div>
         </header>
       )}
@@ -256,6 +330,7 @@ const CampaignGame = () => {
                 onAttemptPlay={handleAttemptPlay}
                 onFinish={handleGameFinish}
                 prize={campaign.prize}
+                gameConfig={campaign.game_config}
             />
           </div>
         )}
@@ -265,10 +340,17 @@ const CampaignGame = () => {
 };
 
 // Component to dispatch the correct game type
-const GameDispatcher = ({ type, onFinish, onAttemptPlay, prize }) => {
+const GameDispatcher = ({ type, onFinish, onAttemptPlay, prize, gameConfig }) => {
     switch (type) {
-      case 'roulette': return <RouletteGame onFinish={onFinish} onAttemptPlay={onAttemptPlay} />;
-      case 'slots': return <SlotGame onFinish={onFinish} onAttemptPlay={onAttemptPlay} />;
+      case 'roulette': 
+        // Use configured prizes if available, otherwise default fallback
+        const participants = gameConfig?.prizes?.map(p => p.label);
+        return <RouletteGame 
+                    onFinish={onFinish} 
+                    onAttemptPlay={onAttemptPlay} 
+                    participants={participants} 
+               />;
+      case 'slots': return <SlotGame onFinish={onFinish} onAttemptPlay={onAttemptPlay} />; // TODO: Pass config to slots
       case 'scratch': return <ScratchGame onFinish={onFinish} onAttemptPlay={onAttemptPlay} prizeName={prize} />;
       default: return <RouletteGame onFinish={onFinish} onAttemptPlay={onAttemptPlay} />;
     }
