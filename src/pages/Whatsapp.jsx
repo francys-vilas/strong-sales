@@ -125,7 +125,7 @@ const Whatsapp = () => {
                         }
                         // Force refresh logs on connection success
                         loadLogs();
-                    } else if (newStatus === 'connecting') {
+                    } else if (newStatus === 'connecting' || newStatus === 'authenticating') {
                         setIsConnecting(true);
                         if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
                          connectionTimeoutRef.current = setTimeout(() => {

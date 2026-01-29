@@ -44,8 +44,8 @@ export const evolutionService = {
    */
   sanitizeInstanceName(input) {
     if (!input) return "unknown";
-    // Works for emails or UUIDs
-    return input.replace(/[^a-zA-Z0-9]/g, "_");
+    // Works for emails or UUIDs (UUIDs have dashes, which we now allow)
+    return input.replace(/[^a-zA-Z0-9-]/g, "_");
   },
 
   /**
@@ -298,9 +298,12 @@ export const evolutionService = {
               } else if (statusText === 'close') {
                   eventName = "Desconectado";
                   statusLabel = "Aviso";
+              } else if (statusText === 'connecting' || statusText === 'authenticating') {
+                  eventName = "Aguardando Sincronização";
+                  statusLabel = "Processando";
               }
               
-              if (!eventName) return null; // Skip 'connecting', 'qrcode', etc.
+              if (!eventName) return null; // Skip 'qrcode', etc.
 
               return {
                   id: `hook-${hook.id}`,
