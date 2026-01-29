@@ -30,6 +30,63 @@ const DEFAULT_PRIZES = [
   { label: 'Ganhou Nada', color: '#94a3b8', probability: 25, icon: 'Smile' },
 ];
 
+const THEME_PRESETS = {
+  default: { name: 'Padrão', bgColor: '#ffffff', prizes: DEFAULT_PRIZES },
+  natal: { 
+    name: 'Natal', 
+    bgColor: '#991b1b', 
+    bgImage: 'https://images.unsplash.com/photo-1511268011861-691ed210aae8?auto=format&fit=crop&q=80&w=1200',
+    prizes: [
+      { label: 'Presente 1', color: '#dc2626', icon: 'Gift' },
+      { label: 'Presente 2', color: '#16a34a', icon: 'Star' },
+      { label: 'Vale-Peru', color: '#b91c1c', icon: 'Truck' },
+      { label: 'Tente dnv', color: '#475569', icon: 'Smile' },
+    ]
+  },
+  pascoa: { 
+    name: 'Páscoa', 
+    bgColor: '#fef3c7', 
+    prizes: [
+      { label: 'Ovo ao Leite', color: '#d97706', icon: 'Heart' },
+      { label: 'Ovo Branco', color: '#fbbf24', icon: 'Smile' },
+      { label: 'Coelhinho', color: '#f59e0b', icon: 'Star' },
+      { label: 'Tente dnv', color: '#94a3b8', icon: 'Smile' },
+    ]
+  },
+  halloween: { 
+    name: 'Halloween', 
+    bgColor: '#1e293b', 
+    prizes: [
+      { label: 'Doce', color: '#f97316', icon: 'Star' },
+      { label: 'Travessura', color: '#7c3aed', icon: 'Smile' },
+      { label: 'Abóbora', color: '#ea580c', icon: 'Smile' },
+      { label: 'Fantasma', color: '#94a3b8', icon: 'Smile' },
+    ]
+  },
+  premium: { 
+    name: 'Premium', 
+    bgColor: '#0f172a', 
+    prizes: [
+      { label: 'Diamante', color: '#e2e8f0', icon: 'Star' },
+      { label: 'Ouro', color: '#fbbf24', icon: 'Dollar' },
+      { label: 'Prata', color: '#94a3b8', icon: 'Card' },
+      { label: 'Tente dnv', color: '#334155', icon: 'Smile' },
+    ]
+  }
+};
+
+const BACKGROUND_PRESETS = [
+  { name: 'Nenhum', url: '' },
+  { name: 'Natal', url: 'https://images.unsplash.com/photo-1511268011861-691ed210aae8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { name: 'Páscoa', url: 'https://images.unsplash.com/photo-1528114039593-38438c1a6da5?auto=format&fit=crop&q=80&w=800' },
+  { name: 'Halloween', url: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=800' },
+  { name: 'Premium (Ouro)', url: 'https://images.unsplash.com/photo-1614850523296-e8c041de4398?auto=format&fit=crop&q=80&w=800' },
+  { name: 'Confetes', url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800' },
+  { name: 'Abstrato Azul', url: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&q=80&w=800' },
+];
+
+const UNSPLASH_ACCESS_KEY = 'uwQ0J3W82-MyaTns7evWTSQ2h_dUJRoC17QtMEDu_GQ';
+
 const Games = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -55,9 +112,18 @@ const Games = () => {
   const [newPrizeColor, setNewPrizeColor] = useState('#8b5cf6'); // Default purple
   const [newPrizeIcon, setNewPrizeIcon] = useState('Gift');
 
+  // Unsplash Search State
+  const [unsplashQuery, setUnsplashQuery] = useState('');
+  const [unsplashResults, setUnsplashResults] = useState([]);
+  const [searchingUnsplash, setSearchingUnsplash] = useState(false);
+
   const [templateId, setTemplateId] = useState(null);
   const [templateName, setTemplateName] = useState('');
   const [organizationId, setOrganizationId] = useState(null);
+
+  // Background state
+  const [bgColor, setBgColor] = useState('#ffffff');
+  const [bgImage, setBgImage] = useState('');
 
   // Sync state with URL param only on mount/change if needed
   useEffect(() => {
@@ -200,6 +266,8 @@ const Games = () => {
               setTemplateName(template.name);
               setGameConfig(template.config || {});
               setPrizes(template.config?.prizes || DEFAULT_PRIZES);
+              if (template.config?.bgColor) setBgColor(template.config.bgColor);
+              if (template.config?.bgImage) setBgImage(template.config.bgImage);
               // setActiveTab(template.game_type); // Optional: Force game type to match template?
           }
       } catch (err) {
@@ -224,7 +292,9 @@ const Games = () => {
       try {
           const configToSave = {
               ...gameConfig,
-              prizes: prizes
+              prizes: prizes,
+              bgColor: bgColor,
+              bgImage: bgImage
           };
 
           let currentTemplateId = templateId;
@@ -299,6 +369,44 @@ const Games = () => {
       toast.success("Modelo duplicado! Salve para persistir.");
   };
 
+  const searchUnsplash = async (query) => {
+      if (!query.trim()) {
+          toast.error("Digite algo para buscar!");
+          return;
+      }
+      
+      setSearchingUnsplash(true);
+      setUnsplashResults([]); // Clear previous results
+      
+      try {
+          console.log(`Buscando no Unsplash: ${query}`);
+          const response = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&orientation=landscape`, {
+              headers: {
+                  'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+              }
+          });
+          
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.errors?.[0] || 'Erro na API do Unsplash');
+          }
+
+          const data = await response.json();
+          
+          if (data.results && data.results.length > 0) {
+              setUnsplashResults(data.results);
+              toast.success(`${data.results.length} imagens encontradas!`);
+          } else {
+              toast.error("Nenhuma imagem encontrada para essa busca.");
+          }
+      } catch (err) {
+          console.error("Unsplash search error:", err);
+          toast.error(`Erro: ${err.message}`);
+      } finally {
+          setSearchingUnsplash(false);
+      }
+  };
+
   const handleAddPrize = () => {
     if (newPrizeLabel.trim()) {
       setPrizes([...prizes, { 
@@ -358,7 +466,12 @@ const Games = () => {
 
        <div className={`${styles.gamesLayout} ${isEditorMode ? styles.withSidebar : ''}`}>
         
-        <div className={styles.gameContainer}>
+        <div className={styles.gameContainer} style={{ 
+            backgroundColor: bgColor,
+            backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+        }}>
             {/* TOP LEFT: Game Switcher Button */}
             <button 
                 className={styles.gameSwitcherBtn}
@@ -471,6 +584,162 @@ const Games = () => {
                 </div>
 
                 <div className={styles.editorContent}>
+                    {/* NEW: THEMES & BACKGROUND SECTION */}
+                    <div className={styles.cardEditor}>
+                        <div className={styles.sectionHeader}>
+                            <span className={styles.sectionTitle}>Temas e Personalização</span>
+                        </div>
+                        <div className={styles.sectionContent}>
+                            <label style={{display: 'block', fontSize: '10px', marginBottom: '8px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase'}}>Temas Prontos</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
+                                {Object.entries(THEME_PRESETS).map(([key, theme]) => (
+                                    <button 
+                                        key={key}
+                                        onClick={() => {
+                                            setBgColor(theme.bgColor);
+                                            setBgImage(theme.bgImage || '');
+                                            setPrizes(theme.prizes);
+                                            toast.success(`Tema ${theme.name} aplicado!`);
+                                        }}
+                                        style={{ 
+                                            padding: '8px', 
+                                            fontSize: '11px', 
+                                            fontWeight: '600', 
+                                            borderRadius: '6px', 
+                                            border: '1px solid #e2e8f0',
+                                            background: theme.bgColor === '#ffffff' ? '#fff' : theme.bgColor,
+                                            color: (theme.bgColor === '#ffffff' || theme.bgColor === '#fef3c7') ? '#334155' : '#fff',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {theme.name}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{display: 'block', fontSize: '10px', marginBottom: '4px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase'}}>Cor de Fundo</label>
+                                    <div style={{ position: 'relative', width: '100%', height: '36px' }}>
+                                        <input 
+                                            type="color" 
+                                            value={bgColor}
+                                            onChange={(e) => setBgColor(e.target.value)}
+                                            style={{ 
+                                                position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' 
+                                            }}
+                                        />
+                                        <div style={{ width: '100%', height: '100%', backgroundColor: bgColor, borderRadius: '6px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: (bgColor === '#ffffff' || bgColor === '#fef3c7') ? '#334155' : '#fff' }}>
+                                            {bgColor.toUpperCase()}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{display: 'block', fontSize: '10px', marginBottom: '4px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase'}}>URL do Fundo</label>
+                                    <input 
+                                        type="text"
+                                        placeholder="https://..."
+                                        value={bgImage}
+                                        onChange={(e) => setBgImage(e.target.value)}
+                                        className="input-field"
+                                        style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ marginTop: '1rem' }}>
+                                <label style={{display: 'block', fontSize: '10px', marginBottom: '8px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase'}}>Imagens Prontas</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
+                                    {BACKGROUND_PRESETS.map((bg, idx) => (
+                                        <button 
+                                            key={idx}
+                                            onClick={() => {
+                                                setBgImage(bg.url);
+                                                toast.success(`Fundo ${bg.name} aplicado!`);
+                                            }}
+                                            style={{ 
+                                                aspectRatio: '1', 
+                                                borderRadius: '6px', 
+                                                border: bgImage === bg.url ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                                                backgroundColor: '#f1f5f9',
+                                                backgroundImage: bg.url ? `url(${bg.url})` : 'none',
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '8px',
+                                                fontWeight: '700',
+                                                color: bg.url ? 'transparent' : '#64748b'
+                                            }}
+                                            title={bg.name}
+                                        >
+                                            {!bg.url && 'Limpar'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* NEW: UNSPLASH SEARCH */}
+                            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                                <label style={{display: 'block', fontSize: '10px', marginBottom: '8px', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Buscar no Unsplash</label>
+                                <div style={{ display: 'flex', gap: '4px', marginBottom: '0.8rem' }}>
+                                    <input 
+                                        type="text"
+                                        placeholder="Ex: Praia, Escritório, Festa..."
+                                        value={unsplashQuery}
+                                        onChange={(e) => setUnsplashQuery(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && searchUnsplash(unsplashQuery)}
+                                        style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px' }}
+                                    />
+                                    <button 
+                                        onClick={() => searchUnsplash(unsplashQuery)}
+                                        disabled={searchingUnsplash}
+                                        style={{ 
+                                            padding: '8px 16px', 
+                                            background: searchingUnsplash ? '#94a3b8' : '#3b82f6', 
+                                            color: '#fff', 
+                                            border: 'none', 
+                                            borderRadius: '6px', 
+                                            cursor: searchingUnsplash ? 'not-allowed' : 'pointer', 
+                                            fontSize: '12px', 
+                                            fontWeight: '700',
+                                            transition: 'all 0.2s',
+                                            minWidth: '45px'
+                                        }}
+                                    >
+                                        {searchingUnsplash ? '...' : 'Ir'}
+                                    </button>
+                                </div>
+
+                                {unsplashResults.length > 0 && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+                                        {unsplashResults.map((img) => (
+                                            <button 
+                                                key={img.id}
+                                                onClick={() => {
+                                                    setBgImage(img.urls.regular);
+                                                    toast.success("Fundo aplicado via Unsplash!");
+                                                }}
+                                                style={{ 
+                                                    aspectRatio: '1', 
+                                                    borderRadius: '6px', 
+                                                    border: '1px solid #e2e8f0',
+                                                    backgroundImage: `url(${img.urls.thumb})`,
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                    cursor: 'pointer'
+                                                }}
+                                                title={img.alt_description}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Template Management Card */}
                     <div className={styles.cardEditor}>
                         {/* Header / Toolbar */}

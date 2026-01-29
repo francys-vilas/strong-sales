@@ -605,7 +605,7 @@
   min-width: 0; /* CRITICAL: Allows flex item to shrink below content size */
   min-height: 500px;
   display: flex;
-  background: white;
+  background: transparent; /* Changed from white */
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   position: relative;
@@ -623,7 +623,7 @@
   justify-content: center;
   align-items: center;
   padding: 3rem;
-  background: white; /* Clean white background */
+  background: transparent; /* Changed from white to show theme background */
   transition: all 0.3s ease;
   min-height: 500px;
 }
